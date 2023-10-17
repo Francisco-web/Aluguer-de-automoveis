@@ -75,16 +75,16 @@ include_once 'sidebar/sidebar.php';
                     ?>
                     <tbody>
                       <tr>
-                        <th scope="row"><a href="#"><?php echo $veiculo;?></a></th>
+                        <th><a href="#"><?php echo $veiculo;?></a></th>
                         <td><?php echo $dataLevantamento;?></td>
                         <td><a href="#" class="text-primary"><?php echo $dataDevolucao;?></a></td>
                         <td><?php echo $valorAluguer;?></td>
-                        <td><span class="badge bg-success"><?php echo $statusPagamento;?></span></td>
+                        <td><span class="btn btn-success"><?php echo $statusPagamento;?></span></td>
                         <td><a href="#" class="text-primary"><?php echo $Cliente;?></a></td>
                         <td><?php echo $motorista;?></td>
                         <td> 
-                            <span class="badge bg-secondary"><i class="bi bi-exclamation-octagon me-1"></i> Alterar</span> 
-                            <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i> Apagar</span>
+                          <a class="btn btn-primary"><i class="ri-edit-line"></i></a>
+                          <a class="btn btn-danger"><i class="ri-delete-bin-5-line"></i><a>
                         </td>
                        
                       </tr>
