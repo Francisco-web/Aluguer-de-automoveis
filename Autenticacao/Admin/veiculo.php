@@ -1,5 +1,5 @@
 <?php
-$pagina ="Aluguer de Veículos";
+$pagina ="Veículos Cadastrados";
 // ======= Head ======= -->
 include_once 'head/head.php';
 
@@ -46,18 +46,34 @@ include_once 'sidebar/sidebar.php';
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title"> Contratos de Aluguer</h5>
+                  <h5 class="card-title"> Consultar Veículos</h5>
 
                   <table class="table table-borderless datatable">
                     <thead>
-                      <tr>
-                        <th scope="col">Veículo</th>
-                        <th scope="col">Data Levantamento</th>
-                        <th scope="col">Data Devolução</th>
-                        <th scope="col">Valor</th>
-                        <th scope="col">Status Pagam.</th>
-                        <th scope="col">Cliente</th>
-                        <th scope="col">Motorista</th>
+                      <tr>idVeiculo
+imagem
+marca
+modelo
+ano
+cor
+placa
+lugares
+portas
+arCondicionado
+combustivel
+travoes
+numCilindros
+cilindrada
+airBags
+numVelocidade
+
+                        <th scope="col">Imagem</th>
+                        <th scope="col">Marca</th>
+                        <th scope="col">Modelo</th>
+                        <th scope="col">Ano</th>
+                        <th scope="col">Cor</th>
+                        <th scope="col">Placa</th>
+                        <th scope="col">Lugares</th>
                         <th scope="col">Acção</th>
                       </tr>
                     </thead>

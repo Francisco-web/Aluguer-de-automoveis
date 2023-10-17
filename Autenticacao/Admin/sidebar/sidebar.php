@@ -11,7 +11,7 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-home"></i><span>Aluguer</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-calendar2-week"></i><span>Aluguer</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
@@ -29,7 +29,7 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-cars"></i><span>Veículo</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="ri-bus-fill"></i><span>Veículo</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
@@ -42,7 +42,7 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-person"></i><span>Cliente</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-people"></i><span>Cliente</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
@@ -55,7 +55,7 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-person"></i><span>Motorista</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-person-bounding-box"></i><span>Motorista</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
@@ -88,14 +88,14 @@
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="galeria.php">
-          <i class="bi bi-person"></i>
+          <i class="bi bi-card-image"></i>
           <span>Galeria</span>
         </a>
       </li><!-- End Profile Page Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="noticia.php">
-          <i class="bi bi-question-circle"></i>
+          <i class="bi bi-camera-reels"></i>
           <span>Notícia</span>
         </a>
       </li><!-- End F.A.Q Page Nav -->
