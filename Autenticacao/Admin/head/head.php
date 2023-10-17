@@ -29,3 +29,8 @@
   <!-- Template Main CSS File -->
   <link href="../assets/css/style.css" rel="stylesheet">
 </head>
+<?php
+include_once '../config_db.php';
+session_start();
+ob_start();
+?>
