@@ -48,7 +48,7 @@ include_once 'sidebar/sidebar.php';
                 <div class="card-body">
                   <h5 class="card-title"> Contratos de Aluguer</h5>
 
-                  <table class="table table-borderless datatable">
+                  <table class="table table-bordered border-primary">
                     <thead>
                       <tr>
                         <th scope="col">Veículo</th>
