@@ -1,5 +1,5 @@
 <?php
-$pagina ="Veículos Cadastrados";
+$pagina ="Aluguer de Veículos";
 // ======= Head ======= -->
 include_once 'head/head.php';
 
@@ -46,22 +46,23 @@ include_once 'sidebar/sidebar.php';
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title"> Consultar Veículos</h5>
+                  <h5 class="card-title"> Contratos de Aluguer</h5>
 
                   <table class="table table-bordered border-primary">
                     <thead>
                       <tr>
-                        <th scope="col">Imagem</th>
-                        <th scope="col">Modelo</th>
-                        <th scope="col">Ano</th>
-                        <th scope="col">Placa</th>
-                        <th scope="col">Disponivel</th>
-                        <th scope="col">Valor Diário</th>
+                        <th scope="col">Veículo</th>
+                        <th scope="col">Data Levantamento</th>
+                        <th scope="col">Data Devolução</th>
+                        <th scope="col">Valor</th>
+                        <th scope="col">Status Pagam.</th>
+                        <th scope="col">Cliente</th>
+                        <th scope="col">Motorista</th>
                         <th scope="col">Acção</th>
                       </tr>
                     </thead>
                     <?php
-                        $sql="SELECT marca,modelo,dataInicio,dataFim,statusPagamento,valorAluguel,ur.nome as motorista,us.nome as cliente FROM aluguer alu inner join veiculo vl on alu.idVeiculo = vl.idVeiculo join cliente cl on alu.idCliente = cl.idCliente join motorista mt on alu.idMotorista = mt.idMotorista join usuario us on cl.idUsuario = us.idUsuario join usuario ur on mt.idUsuario = ur.idUsuario  ORDER BY marca DESC";
+                        $sql="SELECT alu.idAluguel,marca,modelo,dataInicio,dataFim,statusPagamento,valorAluguel,ur.nome as motorista,us.nome as cliente FROM aluguer alu inner join veiculo vl on alu.idVeiculo = vl.idVeiculo join cliente cl on alu.idCliente = cl.idCliente join motorista mt on alu.idMotorista = mt.idMotorista join usuario us on cl.idUsuario = us.idUsuario join usuario ur on mt.idUsuario = ur.idUsuario  ORDER BY marca DESC";
                         $query = mysqli_query($conexao,$sql);
                         while ($dados=mysqli_fetch_array($query)) :
                             $veiculo = $dados['marca']."".$dados['modelo'];
@@ -71,18 +72,22 @@ include_once 'sidebar/sidebar.php';
                             $statusPagamento = $dados['statusPagamento'];
                             $Cliente = $dados['cliente'];
                             $motorista = $dados['motorista'];
+                            $idAluguer = $dados['idAluguel'];
                     ?>
                     <tbody>
                       <tr>
-                        <th scope="row"><a href="#"><?php echo $veiculo;?></a></th>
-                        <td><?php echo $dataLevantamento;?></td>
+                        <th><a href="#"><?php echo $veiculo;?></a></th>
+                        <td class="text-primary"><?php echo $dataLevantamento;?></td>
                         <td><a href="#" class="text-primary"><?php echo $dataDevolucao;?></a></td>
-                        <td><span class="badge bg-success"><?php echo $statusPagamento;?></span></td>
-                        <td><a href="#" class="text-primary"><?php echo $Cliente;?></a></td>
+                        <td><?php echo $valorAluguer;?></td>
+                        <td><span class="text-success"><?php echo $statusPagamento;?></span></td>
+                        <td class="text-primary"><?php echo $Cliente;?></td>
                         <td><?php echo $motorista;?></td>
                         <td> 
-                            <span class="badge bg-secondary"><i class="bi bi-exclamation-octagon me-1"></i> Alterar</span> 
-                            <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i> Apagar</span>
+                          <div class="btn-group">
+                            <a class="btn btn-primary" href="edit_aluguer.php?id=<?php echo $idAluguer;?>"><i class="ri-edit-line"></i></a>
+                            <a class="btn btn-danger" href="aluguel/deletar.php?id=<?php echo $idAluguer;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
+                          </div>
                         </td>
                        
                       </tr>
@@ -166,16 +171,37 @@ include_once 'sidebar/sidebar.php';
                     <input type="datetime-local" name="dataDevolucao" class="form-control" placeholder="Data de Devolução">
                     *Data de Devolução.
                   </div>
-                  <div class="col-6">
-                    <input type="number" class="form-control" name="valorAluger" placeholder="Valor do Aluguer">
-                  </div>
-                  <div class="col-md-4">
-                    <select id="inputState" name="statusPagamento" class="form-select">
-                      <option value="">Status Pagamento</option>
-                      <option>Pendente</option>
-                      <option>Pago</option>
+                  <p><strong>Informação de Pagamento</strong></p>
+                  <div class="col-md-6">
+                    <select id="inputState" name="formaPamento" class="form-select">
+                      <option value="">Forma de Pagamento</option>
+                      <option>Cartão Multicaixa</option>
+                      <option>Transferência</option>
+                      <option>Cheque</option>
+                      <option>Dinheiro</option>
                     </select>
                   </div>
+                  <div class="col-6">
+                    <input type="number" class="form-control" name="taxaMotorista" placeholder="Taxa Com Motorista">
+                  </div>
+                  <div class="col-6">
+                    <input type="number" class="form-control" name="taxaSemMotorista" placeholder="Taxa Sem Motorista">
+                  </div>
+                  <div class="col-6">
+                    <input type="number" class="form-control" name="valorAluguer" placeholder="Valor do Aluguer por dia">
+                  </div>
+                  <div class="col-md-6">
+                    <input type="text" name="numTransacao" class="form-control" placeholder="nº Transação">
+                  </div>
+                  <div class="col-md-6">
+                    <input type="text" name="total" id="total" class="form-control" readonly placeholder="Total">
+                    *Total.
+                  </div>
+                  <div class="col-md-6">
+                    <input type="text" name="comprovativo" class="form-control" placeholder="Comprovativo">
+                    *Comprovativo.
+                  </div>
+                  
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" name="add" class="btn btn-primary">Guardar</button>

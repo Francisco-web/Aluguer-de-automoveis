@@ -50,13 +50,30 @@ include_once 'sidebar/sidebar.php';
 
                   <table class="table table-bordered border-primary">
                     <thead>
-                      <tr>
+                      <tr>idVeiculo
+imagem
+marca
+modelo
+ano
+cor
+placa
+lugares
+portas
+arCondicionado
+combustivel
+travoes
+numCilindros
+cilindrada
+airBags
+numVelocidade
+
                         <th scope="col">Imagem</th>
+                        <th scope="col">Marca</th>
                         <th scope="col">Modelo</th>
                         <th scope="col">Ano</th>
+                        <th scope="col">Cor</th>
                         <th scope="col">Placa</th>
-                        <th scope="col">Disponivel</th>
-                        <th scope="col">Valor Diário</th>
+                        <th scope="col">Lugares</th>
                         <th scope="col">Acção</th>
                       </tr>
                     </thead>
@@ -77,6 +94,7 @@ include_once 'sidebar/sidebar.php';
                         <th scope="row"><a href="#"><?php echo $veiculo;?></a></th>
                         <td><?php echo $dataLevantamento;?></td>
                         <td><a href="#" class="text-primary"><?php echo $dataDevolucao;?></a></td>
+                        <td><?php echo $valorAluguer;?></td>
                         <td><span class="badge bg-success"><?php echo $statusPagamento;?></span></td>
                         <td><a href="#" class="text-primary"><?php echo $Cliente;?></a></td>
                         <td><?php echo $motorista;?></td>

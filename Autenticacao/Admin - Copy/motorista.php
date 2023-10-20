@@ -1,5 +1,5 @@
 <?php
-$pagina ="Veículos Cadastrados";
+$pagina ="Aluguer de Veículos";
 // ======= Head ======= -->
 include_once 'head/head.php';
 
@@ -46,17 +46,18 @@ include_once 'sidebar/sidebar.php';
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title"> Consultar Veículos</h5>
+                  <h5 class="card-title"> Contratos de Aluguer</h5>
 
                   <table class="table table-bordered border-primary">
                     <thead>
                       <tr>
-                        <th scope="col">Imagem</th>
-                        <th scope="col">Modelo</th>
-                        <th scope="col">Ano</th>
-                        <th scope="col">Placa</th>
-                        <th scope="col">Disponivel</th>
-                        <th scope="col">Valor Diário</th>
+                        <th scope="col">Veículo</th>
+                        <th scope="col">Data Levantamento</th>
+                        <th scope="col">Data Devolução</th>
+                        <th scope="col">Valor</th>
+                        <th scope="col">Status Pagam.</th>
+                        <th scope="col">Cliente</th>
+                        <th scope="col">Motorista</th>
                         <th scope="col">Acção</th>
                       </tr>
                     </thead>
@@ -77,6 +78,7 @@ include_once 'sidebar/sidebar.php';
                         <th scope="row"><a href="#"><?php echo $veiculo;?></a></th>
                         <td><?php echo $dataLevantamento;?></td>
                         <td><a href="#" class="text-primary"><?php echo $dataDevolucao;?></a></td>
+                        <td><?php echo $valorAluguer;?></td>
                         <td><span class="badge bg-success"><?php echo $statusPagamento;?></span></td>
                         <td><a href="#" class="text-primary"><?php echo $Cliente;?></a></td>
                         <td><?php echo $motorista;?></td>

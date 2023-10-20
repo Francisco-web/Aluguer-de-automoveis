@@ -41,10 +41,6 @@ include_once 'sidebar/sidebar.php';
             <div class="col-12">
               <div class="card recent-sales overflow-auto">
 
-                <div class="filter">
-                  <a class="btn btn btn-primary" data-bs-toggle="modal" data-bs-target="#largeModal" href="#" ><i class="bi bi-plus"></i>Novo</a>
-                </div>
-
                 <div class="card-body">
                   <h5 class="card-title"> Contratos de Aluguer</h5>
 
@@ -52,39 +48,43 @@ include_once 'sidebar/sidebar.php';
                     <thead>
                       <tr>
                         <th scope="col">Veículo</th>
+                        <th scope="col">Local Levantamento</th>
                         <th scope="col">Data Levantamento</th>
+                        <th scope="col">Local Devolução</th>
                         <th scope="col">Data Devolução</th>
-                        <th scope="col">Valor</th>
-                        <th scope="col">Status Pagam.</th>
+                        <th scope="col">Valor Pago</th>
                         <th scope="col">Cliente</th>
                         <th scope="col">Motorista</th>
                         <th scope="col">Acção</th>
                       </tr>
                     </thead>
                     <?php
-                        $sql="SELECT alu.idAluguel,marca,modelo,dataInicio,dataFim,statusPagamento,valorAluguel,ur.nome as motorista,us.nome as cliente FROM aluguer alu inner join veiculo vl on alu.idVeiculo = vl.idVeiculo join cliente cl on alu.idCliente = cl.idCliente join motorista mt on alu.idMotorista = mt.idMotorista join usuario us on cl.idUsuario = us.idUsuario join usuario ur on mt.idUsuario = ur.idUsuario  ORDER BY marca DESC";
-                        $query = mysqli_query($conexao,$sql);
-                        while ($dados=mysqli_fetch_array($query)) :
-                            $veiculo = $dados['marca']."".$dados['modelo'];
-                            $dataLevantamento = $dados['dataInicio'];
-                            $dataDevolucao = $dados['dataFim'];
-                            $valorAluguer = $dados['valorAluguel'];
-                            $statusPagamento = $dados['statusPagamento'];
-                            $Cliente = $dados['cliente'];
-                            $motorista = $dados['motorista'];
-                            $idAluguer = $dados['idAluguel'];
+                      $sql="SELECT alu.AluguelID,Modelo,LocalRetirada,DataRetirada,LocalDevolucao,DataDevolucao,valorTotal,cl.Nome as cliente,mt.Nome as motorista FROM alugueis alu inner join carros cr on alu.CarroID = cr.CarroID join clientes cl on alu.ClienteID = cl.ClienteID join motoristas mt on alu.MotoristaID = alu.MotoristaID ORDER BY alu.AluguelID DESC";
+                      $query = mysqli_query($conexao,$sql);
+                      while ($dados=mysqli_fetch_array($query)) :
+                          $veiculo = $dados['Modelo'];
+                          $localRetirada = $dados['LocalRetirada'];
+                          $dataRetirada = $dados['DataRetirada'];
+                          $localDevolucao = $dados['LocalDevolucao'];
+                          $dataDevolucao = $dados['DataDevolucao'];
+                          $valorAluguer = $dados['valorTotal'];
+                          $Cliente = $dados['cliente'];
+                          $motorista = $dados['motorista'];
+                          $idAluguer = $dados['AluguelID'];
                     ?>
                     <tbody>
                       <tr>
                         <th><a href="#"><?php echo $veiculo;?></a></th>
-                        <td class="text-primary"><?php echo $dataLevantamento;?></td>
-                        <td><a href="#" class="text-primary"><?php echo $dataDevolucao;?></a></td>
-                        <td><?php echo $valorAluguer;?></td>
-                        <td><span class="text-success"><?php echo $statusPagamento;?></span></td>
-                        <td class="text-primary"><?php echo $Cliente;?></td>
+                        <td><?php echo $localRetirada;?></td>
+                        <td class="text-primary"><?php echo $dataRetirada;?></td>
+                        <td><?php echo $localDevolucao;?></td>
+                        <td class="text-primary"><?php echo $dataDevolucao;?></a></td>
+                         <td><?php echo $valorAluguer;?></td>
+                        <td><?php echo $Cliente;?></td>
                         <td><?php echo $motorista;?></td>
                         <td> 
                           <div class="btn-group">
+                            <a class="btn btn-secondary" href="edit_aluguer.php?id=<?php echo $idAluguer;?>"><i   class="bi-eye"></i></a>
                             <a class="btn btn-primary" href="edit_aluguer.php?id=<?php echo $idAluguer;?>"><i class="ri-edit-line"></i></a>
                             <a class="btn btn-danger" href="aluguel/deletar.php?id=<?php echo $idAluguer;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
                           </div>
@@ -104,116 +104,6 @@ include_once 'sidebar/sidebar.php';
 
       </div>
     </section>
-    <!-- Modal Novo Aluguer -->
-    <div class="modal fade" id="largeModal" tabindex="-1">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Adicionar Aluguer</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">Dados do Aluguer de Veículo</h5>
-
-                <!-- No Labels Form -->
-                <form class="row g-3" method="POST" action="aluguel/inserir.php">
-                  <div class="col-md-4">
-                    <select id="inputState" name="idCliente" class="form-select">
-                      <option value="">Cliente</option>
-                      <?php 
-                        $sql="SELECT idCliente,nome FROM cliente cl inner join usuario us on cl.idUsuario = us.idUsuario ORDER BY idCliente DESC";
-                        $query = mysqli_query($conexao,$sql);
-                        while ($dados=mysqli_fetch_array($query)):
-                            $idCliente = $dados['idCliente'];
-                            $nome = $dados['nome'];
-                      ?>
-                      <option value="<?php echo $idCliente;?>"><?php echo $nome;?></option>
-                      <?php endwhile?>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <select id="inputState" name="idVeiculo" class="form-select">
-                      <option value="">Veículo</option>
-                      <?php 
-                        $sql="SELECT idVeiculo,marca,modelo FROM veiculo ORDER BY idVeiculo DESC";
-                        $query = mysqli_query($conexao,$sql);
-                        while ($dados=mysqli_fetch_array($query)):
-                            $idVeiculo = $dados['idVeiculo'];
-                            $marca = $dados['marca'];
-                            $modelo = $dados['modelo'];
-                      ?>
-                      <option value="<?php echo $idVeiculo;?>"><?php echo $marca." ".$modelo;?></option>
-                      <?php endwhile?>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <select id="inputState" name="idMotorista" class="form-select">
-                      <option selected="">Motorista</option>
-                      <option value="Sem Motorista">Sem Motorista</option>
-                      <?php 
-                        $sql="SELECT idMotorista,nome FROM motorista mt inner join usuario us on mt.idUsuario = us.idUsuario ORDER BY idMotorista DESC";
-                        $query = mysqli_query($conexao,$sql);
-                        while ($dados=mysqli_fetch_array($query)):
-                            $idMotorista = $dados['idMotorista'];
-                            $nome = $dados['nome'];
-                      ?>
-                      <option value="<?php echo $idMotorista;?>"><?php echo $nome;?></option>
-                      <?php endwhile?>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <input type="datetime-local" name="dataLevantamento" class="form-control" placeholder="Data de Levantamento">
-                    *Data de Levantamento.
-                  </div>
-                  <div class="col-md-6">
-                    <input type="datetime-local" name="dataDevolucao" class="form-control" placeholder="Data de Devolução">
-                    *Data de Devolução.
-                  </div>
-                  <p><strong>Informação de Pagamento</strong></p>
-                  <div class="col-md-6">
-                    <select id="inputState" name="formaPamento" class="form-select">
-                      <option value="">Forma de Pagamento</option>
-                      <option>Cartão Multicaixa</option>
-                      <option>Transferência</option>
-                      <option>Cheque</option>
-                      <option>Dinheiro</option>
-                    </select>
-                  </div>
-                  <div class="col-6">
-                    <input type="number" class="form-control" name="taxaMotorista" placeholder="Taxa Com Motorista">
-                  </div>
-                  <div class="col-6">
-                    <input type="number" class="form-control" name="taxaSemMotorista" placeholder="Taxa Sem Motorista">
-                  </div>
-                  <div class="col-6">
-                    <input type="number" class="form-control" name="valorAluguer" placeholder="Valor do Aluguer por dia">
-                  </div>
-                  <div class="col-md-6">
-                    <input type="text" name="numTransacao" class="form-control" placeholder="nº Transação">
-                  </div>
-                  <div class="col-md-6">
-                    <input type="text" name="total" id="total" class="form-control" readonly placeholder="Total">
-                    *Total.
-                  </div>
-                  <div class="col-md-6">
-                    <input type="text" name="comprovativo" class="form-control" placeholder="Comprovativo">
-                    *Comprovativo.
-                  </div>
-                  
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="add" class="btn btn-primary">Guardar</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-          
-        </div>
-      </div>
-    </div><!-- End Extra Large Modal-->
 </main><!-- End #main -->
  
 <?php
