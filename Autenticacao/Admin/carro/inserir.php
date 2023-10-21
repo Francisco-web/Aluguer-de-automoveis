@@ -101,7 +101,7 @@ if (isset($_POST['add'])) {
                     $Imagem = $Imagem['name'];
 
                     //Consulta para inserir marcacao de Aluguer
-                    $sql ="INSERT INTO `carros` (`Imagem`,`Modelo`, `Ano`, `Placa`,`Descricao`, `Disponivel`, `ValorDiaria`) VALUES (?,?,?,?,?,?)";
+                    $sql ="INSERT INTO `carros` (`Imagem`,`Modelo`, `Ano`, `Placa`,`Descricao`, `Disponivel`, `ValorDiaria`) VALUES (?,?,?,?,?,?,?)";
                     //Preparar a consulta
                     $preparar = mysqli_prepare($conexao,$sql);
                     if ($preparar==false) {
@@ -112,7 +112,7 @@ if (isset($_POST['add'])) {
                         header("location:../veiculo.php");
                     }
                     //vincular os parametros
-                    mysqli_stmt_bind_param($preparar,"sssssid",$Imagem,$Modelo,$Ano,$Placa,$Descricao,$Disponivel,$ValorDiario);
+                    mysqli_stmt_bind_param($preparar,"ssissid",$Imagem,$Modelo,$Ano,$Placa,$Descricao,$Disponivel,$ValorDiario);
 
                     //Executar a consulta
                     if (mysqli_stmt_execute($preparar)) {

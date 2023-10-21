@@ -47,7 +47,6 @@ include_once 'sidebar/sidebar.php';
 
                 <div class="card-body">
                   <h5 class="card-title"> Consultar Veículos</h5>
-
                   <table class="table table-bordered border-primary">
                     <thead>
                       <tr>
@@ -127,6 +126,9 @@ include_once 'sidebar/sidebar.php';
                   </div>
                   <div class="col-6">
                     <input type="number" class="form-control" name="valorDiario" placeholder="Valor Diário">
+                  </div>
+                  <div class="col-6">
+                    <textarea name="descricao" class="form-control" id="descricao" cols="5" rows="5"></textarea>
                   </div>
                   <div class="col-md-6">
                     <input type="file" name="imagem" class="form-control" placeholder="Imagem">
