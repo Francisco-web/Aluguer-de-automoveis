@@ -138,13 +138,53 @@ if (isset($_GET['id'])) {
                             <input type="datetime-local" name="dataDevolucao" class="form-control" placeholder="Data de Devolução" value="<?php echo $dataDevolucao;?>">
                             *Data de Devolução.
                           </div>
+                          
+                          <div class="col-md-4">
+                            <select id="inputState" name="idVeiculo" class="form-select">
+                              <option value="">Situação</option>
+                              <?php 
+                                $sql="SELECT EstadoAluguel FROM alugueis ORDER BY EstadoALuguel ";
+                                $query = mysqli_query($conexao,$sql);
+                                $dados=mysqli_fetch_array($query);
+                                  $NovoEstado = $dados['EstadoAluguel'];
+                              ?>
+                              <option value="Ativo"
+                              <?php 
+                              //Selcecionar modelo correspondente ao dados do banco de dados
+                                if($EstadoAluguel == 'Ativo'){echo"Selected";}?>
+                              >Ativo</option>
+                              
+                              <option value="Inativo"
+                              <?php 
+                              //Selcecionar modelo correspondente ao dados do banco de dados
+                                if($EstadoAluguel == 'Inativo'){echo"Selected";}?>
+                              >Inactivo</option>
+                            </select>
+                          </div>
+                          <p><strong>Dados de Pagamentos</strong></p>
                           <div class="col-6">
                             <input type="number" class="form-control" name="valorAluger" placeholder="Valor do Aluguer" value="<?php echo $valorAluguer;?>" readonly>
                             *Valor Pago
                           </div>
-                          <div class="col-6">
-                            <input type="text" class="form-control" name="statusAluguel" placeholder="status Aluguel" value="<?php echo $EstadoAluguel;?>" readonly>
-                            *Status Aluguel
+                          <div class="col-md-4">
+                            <select id="inputState" name="taxa" class="form-select">
+                              <option selected="">Taxas</option>
+                              <option value="Sem taxa">Sem Taxa</option>
+                              <?php 
+                                $sql="SELECT TaxaID, FROM taxas ORDER BY Nome DESC";
+                                $query = mysqli_query($conexao,$sql);
+                                while ($dados=mysqli_fetch_array($query)):
+                                    $idMotorista = $dados['TaxaID'];
+                                    $nome = $dados['nome'];
+                              ?>
+                              <option value="<?php echo $idMotorista;?>"
+                              <?php
+                              //Selcecionar cliente correspondente ao dados do banco de dados
+                                  if($nome == $motorista){echo"Selected";}
+                              ?>
+                              ><?php echo $nome;?></option>
+                              <?php endwhile?>
+                            </select>
                           </div>
                           <div class="text-center">
                             <button type="submit" name="cancelar" class="btn btn-secondary" >Cancelar</button>
