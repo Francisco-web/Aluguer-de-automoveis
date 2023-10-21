@@ -10,7 +10,11 @@ if (isset($_POST['add'])) {
   $Ano = mysqli_escape_string($conexao,$_POST['ano']);
   $Placa = mysqli_escape_string($conexao,$_POST['placa']);
   $ValorDiario = mysqli_escape_string($conexao,$_POST['valorDiario']);
-  $Descricao = mysqli_escape_string($conexao,$_POST['descricao']);
+  $Lugar = mysqli_escape_string($conexao,$_POST['lugar']);
+  $Bagageira = mysqli_escape_string($conexao,$_POST['bagageira']);
+  $Conforto = mysqli_escape_string($conexao,$_POST['conforto']);
+  $Porta = mysqli_escape_string($conexao,$_POST['porta']);
+  $MotorSeguranca = mysqli_escape_string($conexao,$_POST['motorSeguranca']);
   $Disponivel = 1;
   $Imagem = $_FILES['imagem'];
 
@@ -101,7 +105,7 @@ if (isset($_POST['add'])) {
                     $Imagem = $Imagem['name'];
 
                     //Consulta para inserir marcacao de Aluguer
-                    $sql ="INSERT INTO `carros` (`Imagem`,`Modelo`, `Ano`, `Placa`,`Descricao`, `Disponivel`, `ValorDiaria`) VALUES (?,?,?,?,?,?,?)";
+                    $sql ="INSERT INTO `carros` (`Imagem`,`Modelo`, `Ano`, `Placa`,`Lugar`,`Porta`,`Bagageira`,`MotorSeguranca`,`Conforto`,`Disponivel`, `ValorDiaria`) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
                     //Preparar a consulta
                     $preparar = mysqli_prepare($conexao,$sql);
                     if ($preparar==false) {
@@ -112,7 +116,7 @@ if (isset($_POST['add'])) {
                         header("location:../veiculo.php");
                     }
                     //vincular os parametros
-                    mysqli_stmt_bind_param($preparar,"ssissid",$Imagem,$Modelo,$Ano,$Placa,$Descricao,$Disponivel,$ValorDiario);
+                    mysqli_stmt_bind_param($preparar,"ssissssssid",$Imagem,$Modelo,$Ano,$Placa,$Lugar,$Porta,$Bagageira,$MotorSeguranca,$Conforto,$Disponivel,$ValorDiario);
 
                     //Executar a consulta
                     if (mysqli_stmt_execute($preparar)) {

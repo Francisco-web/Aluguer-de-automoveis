@@ -47,6 +47,7 @@ include_once 'sidebar/sidebar.php';
 
                 <div class="card-body">
                   <h5 class="card-title"> Consultar Veículos</h5>
+                    
                   <table class="table table-bordered border-primary">
                     <thead>
                       <tr>
@@ -60,16 +61,21 @@ include_once 'sidebar/sidebar.php';
                       </tr>
                     </thead>
                     <?php
-                        $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria FROM carros  ORDER BY Modelo";
+                        $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros WHERE estadoCarro !='Apagado' ORDER BY Modelo";
                         $query = mysqli_query($conexao,$sql);
                         while ($dados=mysqli_fetch_array($query)) :
-                            $CarroID = $dados['CarroID'];  
-                            $Imagem = $dados['Imagem'];
-                            $Modelo = $dados['Modelo'];
-                            $Ano = $dados['Ano'];
-                            $Placa = $dados['Placa'];
-                            $Diponivel = $dados['Disponivel'];
-                            $ValorDiaria = $dados['ValorDiaria'];
+                          $CarroID = $dados['CarroID'];  
+                          $Imagem = $dados['Imagem'];
+                          $Modelo = $dados['Modelo'];
+                          $Ano = $dados['Ano'];
+                          $Placa = $dados['Placa'];
+                          $Diponivel = $dados['Disponivel'];
+                          $ValorDiaria = $dados['ValorDiaria'];
+                          $Lugar = $dados['Lugar'];
+                          $Bagageira = $dados['Bagageira'];
+                          $Conforto = $dados['Conforto'];
+                          $Porta = $dados['Porta'];
+                          $MotorSeguranca = $dados['MotorSeguranca'];
                     ?>
                     <tbody>
                       <tr>
@@ -81,7 +87,7 @@ include_once 'sidebar/sidebar.php';
                         <td><?php echo $ValorDiaria;?></td>
                         <td> 
                           <div class="btn-group">
-                            <a class="btn btn-secondary" href="edit_veiculo.php?id=<?php echo $CarroID;?>"><i   class="bi-eye"></i></a>
+                            <a class="btn btn-secondary" href="../imprimir/carro.php?id=<?php echo $CarroID;?>"><i   class="bi-eye"></i></a>
                             <a class="btn btn-primary" href="edit_veiculo.php?id=<?php echo $CarroID;?>"><i class="ri-edit-line"></i></a>
                             <a class="btn btn-danger" href="carro/deletar.php?id=<?php echo $CarroID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
                           </div>
@@ -128,7 +134,19 @@ include_once 'sidebar/sidebar.php';
                     <input type="number" class="form-control" name="valorDiario" placeholder="Valor Diário">
                   </div>
                   <div class="col-6">
-                    <textarea name="descricao" class="form-control" id="descricao" cols="5" rows="5"></textarea>
+                    <input type="text" class="form-control" name="porta" placeholder="Portas">
+                  </div>
+                  <div class="col-6">
+                    <input type="text" class="form-control" name="lugar" placeholder="Lugares">
+                  </div>
+                  <div class="col-6">
+                    <input type="text" class="form-control" name="bagageira" placeholder="Bagageira">
+                  </div>
+                  <div class="col-6">
+                    <input type="text" class="form-control" name="motorSeguranca" placeholder="Motor e Segurança">
+                  </div>
+                  <div class="col-6">
+                    <input type="text" class="form-control" name="conforto" placeholder="Conforto">
                   </div>
                   <div class="col-md-6">
                     <input type="file" name="imagem" class="form-control" placeholder="Imagem">
