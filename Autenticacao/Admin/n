@@ -1,0 +1,28 @@
+//Consulta para inserir marcacao de Aluguer
+            $sql ="INSERT INTO `carros` (`Modelo`, `Ano`, `Placa`, `Disponivel`, `ValorDiaria`) VALUES (?,?,?,?,?)";
+            //Preparar a consulta
+            $preparar = mysqli_prepare($conexao,$sql);
+            if ($preparar==false) {
+                $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+                Erro na Preparação da Consulta!
+                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>";
+            header("location:../veiculo.php");
+            }
+            //vincular os parametros
+            mysqli_stmt_bind_param($preparar,"sssid",$Modelo,$Ano,$Placa,$Disponivel,$ValorDiario);
+
+            //Executar a consulta
+            if (mysqli_stmt_execute($preparar)) {
+                $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
+                    Veículo Cadastrado com Sucesso.
+                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                </div>";
+                header("location:../veiculo.php");
+            }else {
+                $_SESSION['msg']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                Erro ao Cadastrar Veículo!
+                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                </div>";
+                header("location:../veiculo.php");
+            }

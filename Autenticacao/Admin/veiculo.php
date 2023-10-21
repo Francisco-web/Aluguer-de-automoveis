@@ -61,30 +61,32 @@ include_once 'sidebar/sidebar.php';
                       </tr>
                     </thead>
                     <?php
-                        $sql="SELECT marca,modelo,dataInicio,dataFim,statusPagamento,valorAluguel,ur.nome as motorista,us.nome as cliente FROM aluguer alu inner join veiculo vl on alu.idVeiculo = vl.idVeiculo join cliente cl on alu.idCliente = cl.idCliente join motorista mt on alu.idMotorista = mt.idMotorista join usuario us on cl.idUsuario = us.idUsuario join usuario ur on mt.idUsuario = ur.idUsuario  ORDER BY marca DESC";
+                        $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria FROM carros  ORDER BY Modelo";
                         $query = mysqli_query($conexao,$sql);
                         while ($dados=mysqli_fetch_array($query)) :
-                            $veiculo = $dados['marca']."".$dados['modelo'];
-                            $dataLevantamento = $dados['dataInicio'];
-                            $dataDevolucao = $dados['dataFim'];
-                            $valorAluguer = $dados['valorAluguel'];
-                            $statusPagamento = $dados['statusPagamento'];
-                            $Cliente = $dados['cliente'];
-                            $motorista = $dados['motorista'];
+                            $CarroID = $dados['CarroID'];  
+                            $Imagem = $dados['Imagem'];
+                            $Modelo = $dados['Modelo'];
+                            $Ano = $dados['Ano'];
+                            $Placa = $dados['Placa'];
+                            $Diponivel = $dados['Disponivel'];
+                            $ValorDiaria = $dados['ValorDiaria'];
                     ?>
                     <tbody>
                       <tr>
-                        <th scope="row"><a href="#"><?php echo $veiculo;?></a></th>
-                        <td><?php echo $dataLevantamento;?></td>
-                        <td><a href="#" class="text-primary"><?php echo $dataDevolucao;?></a></td>
-                        <td><span class="badge bg-success"><?php echo $statusPagamento;?></span></td>
-                        <td><a href="#" class="text-primary"><?php echo $Cliente;?></a></td>
-                        <td><?php echo $motorista;?></td>
+                        <th><img src="../imagens/carros/<?php echo $Imagem;?>" width="100" alt="<?php echo $Modelo;?>"></th>
+                        <td><?php echo $Modelo;?></td>
+                        <td><a href="#" class="text-primary"><?php echo $Ano;?></a></td>
+                        <td><span class="badge bg-success"><?php echo $Placa;?></span></td>
+                        <td><?php echo $Diponivel == 1 ? "Sim":"Não";?></td>
+                        <td><?php echo $ValorDiaria;?></td>
                         <td> 
-                            <span class="badge bg-secondary"><i class="bi bi-exclamation-octagon me-1"></i> Alterar</span> 
-                            <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i> Apagar</span>
+                          <div class="btn-group">
+                            <a class="btn btn-secondary" href="edit_veiculo.php?id=<?php echo $CarroID;?>"><i   class="bi-eye"></i></a>
+                            <a class="btn btn-primary" href="edit_veiculo.php?id=<?php echo $CarroID;?>"><i class="ri-edit-line"></i></a>
+                            <a class="btn btn-danger" href="carro/deletar.php?id=<?php echo $CarroID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
+                          </div>
                         </td>
-                       
                       </tr>
                     </tbody>
                     <?php endwhile;?>
@@ -104,77 +106,30 @@ include_once 'sidebar/sidebar.php';
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Adicionar Aluguer</h5>
+            <h5 class="modal-title">Cadastrar Veículo</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Dados do Aluguer de Veículo</h5>
+                <h5 class="card-title">Dados do Veículo</h5>
 
                 <!-- No Labels Form -->
-                <form class="row g-3" method="POST" action="aluguel/inserir.php">
-                  <div class="col-md-4">
-                    <select id="inputState" name="idCliente" class="form-select">
-                      <option value="">Cliente</option>
-                      <?php 
-                        $sql="SELECT idCliente,nome FROM cliente cl inner join usuario us on cl.idUsuario = us.idUsuario ORDER BY idCliente DESC";
-                        $query = mysqli_query($conexao,$sql);
-                        while ($dados=mysqli_fetch_array($query)):
-                            $idCliente = $dados['idCliente'];
-                            $nome = $dados['nome'];
-                      ?>
-                      <option value="<?php echo $idCliente;?>"><?php echo $nome;?></option>
-                      <?php endwhile?>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <select id="inputState" name="idVeiculo" class="form-select">
-                      <option value="">Veículo</option>
-                      <?php 
-                        $sql="SELECT idVeiculo,marca,modelo FROM veiculo ORDER BY idVeiculo DESC";
-                        $query = mysqli_query($conexao,$sql);
-                        while ($dados=mysqli_fetch_array($query)):
-                            $idVeiculo = $dados['idVeiculo'];
-                            $marca = $dados['marca'];
-                            $modelo = $dados['modelo'];
-                      ?>
-                      <option value="<?php echo $idVeiculo;?>"><?php echo $marca." ".$modelo;?></option>
-                      <?php endwhile?>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <select id="inputState" name="idMotorista" class="form-select">
-                      <option selected="">Motorista</option>
-                      <option value="Sem Motorista">Sem Motorista</option>
-                      <?php 
-                        $sql="SELECT idMotorista,nome FROM motorista mt inner join usuario us on mt.idUsuario = us.idUsuario ORDER BY idMotorista DESC";
-                        $query = mysqli_query($conexao,$sql);
-                        while ($dados=mysqli_fetch_array($query)):
-                            $idMotorista = $dados['idMotorista'];
-                            $nome = $dados['nome'];
-                      ?>
-                      <option value="<?php echo $idMotorista;?>"><?php echo $nome;?></option>
-                      <?php endwhile?>
-                    </select>
+                <form class="row g-3" method="POST" action="carro/inserir.php" enctype="multipart/form-data">
+                  <div class="col-md-6">
+                    <input type="text" name="modelo" class="form-control" placeholder="Modelo">
                   </div>
                   <div class="col-md-6">
-                    <input type="datetime-local" name="dataLevantamento" class="form-control" placeholder="Data de Levantamento">
-                    *Data de Levantamento.
+                    <input type="text" name="ano" class="form-control" placeholder="Ano">
                   </div>
                   <div class="col-md-6">
-                    <input type="datetime-local" name="dataDevolucao" class="form-control" placeholder="Data de Devolução">
-                    *Data de Devolução.
+                    <input type="text" name="placa" class="form-control" placeholder="Placa">
                   </div>
                   <div class="col-6">
-                    <input type="number" class="form-control" name="valorAluger" placeholder="Valor do Aluguer">
+                    <input type="number" class="form-control" name="valorDiario" placeholder="Valor Diário">
                   </div>
-                  <div class="col-md-4">
-                    <select id="inputState" name="statusPagamento" class="form-select">
-                      <option value="">Status Pagamento</option>
-                      <option>Pendente</option>
-                      <option>Pago</option>
-                    </select>
+                  <div class="col-md-6">
+                    <input type="file" name="imagem" class="form-control" placeholder="Imagem">
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

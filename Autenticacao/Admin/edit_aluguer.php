@@ -148,17 +148,15 @@ if (isset($_GET['id'])) {
                                 $dados=mysqli_fetch_array($query);
                                   $NovoEstado = $dados['EstadoAluguel'];
                               ?>
-                              <option value="Ativo"
-                              <?php 
-                              //Selcecionar modelo correspondente ao dados do banco de dados
-                                if($EstadoAluguel == 'Ativo'){echo"Selected";}?>
-                              >Ativo</option>
-                              
-                              <option value="Inativo"
-                              <?php 
-                              //Selcecionar modelo correspondente ao dados do banco de dados
-                                if($EstadoAluguel == 'Inativo'){echo"Selected";}?>
-                              >Inactivo</option>
+                             <option value="Activo"<?php if ($NovoEstado=='Activo') {
+                                    echo "Selected";
+                                } ?>>Activo
+                              </option>
+
+                              <option <?php if ($NovoEstado=='Inactivo') {
+                                echo "Selected";
+                                } ?>>Inactivo
+                              </option>
                             </select>
                           </div>
                           <p><strong>Dados de Pagamentos</strong></p>
@@ -169,19 +167,15 @@ if (isset($_GET['id'])) {
                           <div class="col-md-4">
                             <select id="inputState" name="taxa" class="form-select">
                               <option selected="">Taxas</option>
-                              <option value="Sem taxa">Sem Taxa</option>
                               <?php 
-                                $sql="SELECT TaxaID, FROM taxas ORDER BY Nome DESC";
+                                $sql="SELECT TaxaID,Nome FROM taxas ORDER BY Nome DESC";
                                 $query = mysqli_query($conexao,$sql);
                                 while ($dados=mysqli_fetch_array($query)):
-                                    $idMotorista = $dados['TaxaID'];
-                                    $nome = $dados['nome'];
+                                    $idTaxa = $dados['TaxaID'];
+                                    $nome = $dados['Nome'];
                               ?>
-                              <option value="<?php echo $idMotorista;?>"
-                              <?php
-                              //Selcecionar cliente correspondente ao dados do banco de dados
-                                  if($nome == $motorista){echo"Selected";}
-                              ?>
+                              <option value="<?php echo $idTaxa;?>"
+                              
                               ><?php echo $nome;?></option>
                               <?php endwhile?>
                             </select>
