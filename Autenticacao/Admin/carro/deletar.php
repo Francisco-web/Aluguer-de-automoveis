@@ -63,3 +63,6 @@ if (isset($_GET['id'])) {
       header('../veiculo.php');
     }
 }
+//Fechar a e consulta e a conexao
+mysqli_stmt_close($preparar);
+mysqli_close($conexao);

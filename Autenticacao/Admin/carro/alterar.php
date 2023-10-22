@@ -89,6 +89,9 @@ if (isset($_POST['actualizar'])) {
           
     } 
   }    
-}
 
+}
+//Fechar a e consulta e a conexao
+mysqli_stmt_close($preparar);
+mysqli_close($conexao);
 ?>

@@ -90,7 +90,7 @@ if (isset($_POST['add'])) {
         header("location:../aluguer.php");
       }
       //vincular os parametros
-      mysqli_stmt_bind_param($preparar,"idssss",$idAluguer,$valorAluguer,$dataPagamento,$formaPagamento,$numTransacao,$comprovativo);
+      mysqli_stmt_bind_param($preparar_pagamento,"idssss",$idAluguer,$valorAluguer,$dataPagamento,$formaPagamento,$numTransacao,$comprovativo);
       //Executar a consulta
       if (mysqli_stmt_execute($preparar_pagamento)) {
           $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
@@ -109,4 +109,8 @@ if (isset($_POST['add'])) {
   }    
 }
 
+//Fechar a e consulta e a conexao
+mysqli_stmt_close($preparar);
+mysqli_stmt_close($preparar_pagamento);
+mysqli_close($conexao);
 ?>

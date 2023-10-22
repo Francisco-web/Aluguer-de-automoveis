@@ -53,3 +53,6 @@ if (isset($_GET['Disponivel']) && isset($_GET['id'])) {
     }
    
 }
+//Fechar a e consulta e a conexao
+mysqli_stmt_close($preparar);
+mysqli_close($conexao);

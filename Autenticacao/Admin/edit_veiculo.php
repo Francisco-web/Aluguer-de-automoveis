@@ -13,7 +13,7 @@ include_once 'sidebar/sidebar.php';
 if (isset($_GET['id'])) {
   $id = mysqli_escape_string($conexao,$_GET['id']);
   //Consulta no banco para listar os itens do aluguer
-  $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,descricao,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros WHERE CarroID = $id ORDER BY Modelo";
+  $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros WHERE CarroID = $id ORDER BY Modelo";
   $query = mysqli_query($conexao,$sql);
   $dados=mysqli_fetch_array($query);
   $CarroID = $dados['CarroID'];  
@@ -23,7 +23,6 @@ if (isset($_GET['id'])) {
   $Placa = $dados['Placa'];
   $Diponivel = $dados['Disponivel'];
   $ValorDiaria = $dados['ValorDiaria'];
-  $Descricao = $dados['descricao'];
   $Lugar = $dados['Lugar'];
   $Bagageira = $dados['Bagageira'];
   $Conforto = $dados['Conforto'];
@@ -79,7 +78,7 @@ if (isset($_GET['id'])) {
                             <input type="text" name="ano" class="form-control" value="<?php echo $Ano;?>" placeholder="Ano">
                           </div>
                           <div class="col-md-6">
-                            <input type="text" name="placa" class="form-control" value="<?php echo $Placa;?>" placeholder="Placa">
+                            <input type="text" name="placa" readonly class="form-control" value="<?php echo $Placa;?>" placeholder="Placa">
                           </div>
                           <div class="col-6">
                             <input type="text" class="form-control" name="porta" value="<?php echo $Porta;?>" placeholder="Portas">
@@ -97,7 +96,7 @@ if (isset($_GET['id'])) {
                             <input type="text" class="form-control" name="conforto" value="<?php echo $Conforto;?>" placeholder="Conforto">
                           </div>
                           <div class="col-6">
-                            <input type="number" class="form-control" name="valorDiario" value="<?php echo $ValorDiaria;?>" placeholder="Valor Diário">
+                            <input type="number" class="form-control" readonly name="valorDiario" value="<?php echo $ValorDiaria;?>" placeholder="Valor Diário">
                           </div>
                           <div class="text-center">
                             <button type="submit" name="cancelar" class="btn btn-secondary" >Cancelar</button>
