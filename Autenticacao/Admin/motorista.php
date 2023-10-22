@@ -1,5 +1,5 @@
 <?php
-$tituloPagina ="Veículos Cadastrados";
+$tituloPagina ="Motoristas Cadastrados";
 // ======= Head ======= -->
 include_once 'head/head.php';
 
@@ -61,11 +61,11 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                     <thead>
                       <tr>
                         <th scope="col">Imagem</th>
-                        <th scope="col">Modelo</th>
-                        <th scope="col">Ano</th>
-                        <th scope="col">Placa</th>
-                        <th scope="col">Disponivel</th>
-                        <th scope="col">Valor Diário</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Nº Carta de Condução</th>
+                        <th scope="col">Telefone</th>
+                        <th scope="col">Endereco</th>
+                        <th scope="col">Situação</th>
                         <th scope="col">Acção</th>
                       </tr>
                     </thead>
@@ -73,40 +73,35 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                       //Pesquisar carro
                       if(!empty($_GET['pesquisar'])) {
                         $dados = $_GET['pesquisar'];
-                        $EstadoCarro ="Apagado";
-                        $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros WHERE estadoCarro != '$EstadoCarro' and Modelo like '%$dados%' ORDER BY Modelo LIMIT $inicio, $qnt_result_pg";
+                        $EstadoUsuario="Activo";
+                        $sql="SELECT Imagem,MotoristaID,Nome, CartaConducao, Telefone, Endereco FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoUsuario ='$EstadoUsuario' and Nome like '%$dados%' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }else {
-                        $EstadoCarro ="Apagado";
-                        $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros WHERE estadoCarro != '$EstadoCarro' ORDER BY Modelo LIMIT $inicio, $qnt_result_pg";
+                        $EstadoUsuario="Activo";
+                        $sql="SELECT Imagem,MotoristaID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoUsuario ='$EstadoUsuario' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }
                       $query = mysqli_query($conexao,$sql);
                       while ($dados=mysqli_fetch_array($query)) :
-                        $CarroID = $dados['CarroID'];  
-                        $Imagem = $dados['Imagem'];
-                        $Modelo = $dados['Modelo'];
-                        $Ano = $dados['Ano'];
-                        $Placa = $dados['Placa'];
-                        $Diponivel = $dados['Disponivel'];
-                        $ValorDiaria = $dados['ValorDiaria'];
-                        $Lugar = $dados['Lugar'];
-                        $Bagageira = $dados['Bagageira'];
-                        $Conforto = $dados['Conforto'];
-                        $Porta = $dados['Porta'];
-                        $MotorSeguranca = $dados['MotorSeguranca'];
+                        $Imagem = $dados['Imagem']; 
+                        $MotoristaID = $dados['MotoristaID'];  
+                        $Nome = $dados['Nome'];
+                        $CartaConducao = $dados['CartaConducao'];
+                        $Telefone = $dados['Telefone'];
+                        $Estadousuario = $dados['EstadoUsuario'];
+                        $Endereco = $dados['Endereco'];
                     ?>
                     <tbody>
                       <tr>
-                        <th><img src="../imagens/carros/<?php echo $Imagem;?>" width="100" alt="<?php echo $Modelo;?>"></th>
-                        <td><?php echo $Modelo;?></td>
-                        <td><a href="#" class="text-primary"><?php echo $Ano;?></a></td>
-                        <td><span class="badge bg-success"><?php echo $Placa;?></span></td>
-                        <td><?php echo $Diponivel == 1 ? "<a class='btn btn-warning' disabled href='carro/disponivel.php?Disponivel=Sim&id=$CarroID'><i class='bi-undo'></i> Sim</a>":"<a class='btn btn-dark' href='carro/disponivel.php?Disponivel=Não&id=$CarroID'><i class='bi-undo'></i> Não</a>";?></td>
-                        <td><?php echo number_format($ValorDiaria,2,",",".");?></td>
+                        <th><img src="../imagens/usuarios/<?php echo $Imagem;?>" width="100" alt="<?php echo $Nome;?>"></th>
+                        <td><?php echo $Nome;?></td>
+                        <td class="text-primary"><?php echo $CartaConducao;?></td>
+                        <td><?php echo $Telefone;?></td>
+                        <td><?php echo $Endereco;?></td>
+                        <td><?php echo $Estadousuario == 'Activo' ? "<a class='btn btn-warning' disabled href='carro/disponivel.php?Disponivel=Sim&id=$MotoristaID'><i class='bi-undo'></i> Activo</a>":"<a class='btn btn-dark' href='carro/disponivel.php?Disponivel=Não&id=$MotoristaID'><i class='bi-undo'></i> Inactivo</a>";?></td>
                         <td> 
                           <div class="btn-group">
-                            <a class="btn btn-secondary" href="../imprimir/carro.php?id=<?php echo $CarroID;?>"><i   class="bi-eye"></i></a>
-                            <a class="btn btn-primary" href="edit_veiculo.php?id=<?php echo $CarroID;?>"><i class="ri-edit-line"></i></a>
-                            <a class="btn btn-danger" href="carro/deletar.php?id=<?php echo $CarroID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
+                            <a class="btn btn-secondary" href="../imprimir/carro.php?id=<?php echo $MotoristaID;?>"><i   class="bi-eye"></i></a>
+                            <a class="btn btn-primary" href="edit_veiculo.php?id=<?php echo $MotoristaID;?>"><i class="ri-edit-line"></i></a>
+                            <a class="btn btn-danger" href="carro/deletar.php?id=<?php echo $MotoristaID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
                           </div>
                         </td>
                       </tr>
@@ -172,45 +167,38 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Cadastrar Veículo</h5>
+            <h5 class="modal-title">Cadastrar Motorista</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Dados do Veículo</h5>
+                <h5 class="card-title">Dados do Motorista</h5>
 
                 <!-- No Labels Form -->
-                <form class="row g-3" method="POST" action="carro/inserir.php" enctype="multipart/form-data">
+                <form class="row g-3" method="POST" action="motorista/inserir.php" enctype="multipart/form-data">
+                  <p><strong>Dados Pessoais</strong></p>
                   <div class="col-md-6">
-                    <input type="text" name="modelo" class="form-control" placeholder="Modelo" autocomplete="off" >
-                  </div>
-                  <div class="col-md-6">
-                    <input type="text" name="ano" class="form-control" placeholder="Ano" autocomplete="off" >
+                    <input type="text" name="nome" class="form-control" placeholder="Nome" autocomplete="off" required>
                   </div>
                   <div class="col-md-6">
-                    <input type="text" name="placa" class="form-control" placeholder="Placa" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="number" class="form-control" name="valorDiario" placeholder="Valor Diário" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="porta" placeholder="Portas" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="lugar" placeholder="Lugares" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="bagageira" placeholder="Bagageira" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="motorSeguranca" placeholder="Motor e Segurança" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="conforto" placeholder="Conforto" autocomplete="off">
+                    <input type="text" name="Telefone" class="form-control" placeholder="Telefone" autocomplete="off" required>
                   </div>
                   <div class="col-md-6">
-                    <input type="file" name="imagem" class="form-control" placeholder="Imagem">
+                    <input type="text" name="cartaConducao" class="form-control" placeholder="Nº Carta de Condução" autocomplete="off"required >
+                  </div>
+                  <div class="col-md-6">
+                    <textarea name="endereco" id="endereco" required class="form-control" cols="5" rows="3" placeholder="Endereço"></textarea>
+                  </div>
+                  <p><strong>Dados de Usuário</strong></p>
+                  <div class="col-6">
+                    <input type="Email" class="form-control" name="emali" placeholder="Email" autocomplete="off" required>
+                  </div>
+                  <div class="col-6">
+                    <input type="text" class="form-control" name="senha" minlenth="6" placeholder="Senha" autocomplete="off" required>
+                  </div>
+                  <div class="col-md-6">
+                    <input type="file" name="imagem" class="form-control" placeholder="Imagem" required>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
