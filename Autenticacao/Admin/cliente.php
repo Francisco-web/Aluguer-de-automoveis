@@ -1,5 +1,5 @@
 <?php
-$pagina ="Aluguer de Veículos";
+$tituloPagina ="Veículos Cadastrados";
 // ======= Head ======= -->
 include_once 'head/head.php';
 
@@ -10,17 +10,26 @@ include_once 'header/header.php';
 include_once 'sidebar/sidebar.php';
  
 //-- ======= main ======= -->
+//Receber o número da página
+$pagina_atual = filter_input(INPUT_GET,'pagina', FILTER_SANITIZE_NUMBER_INT);		
+$pagina = (!empty($pagina_atual)) ? $pagina_atual : 1;
+		
+//Setar a quantidade de itens por pagina
+$qnt_result_pg = 6;
+//calcular o inicio visualização
+$inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
+
 ?> 
 
 <!-- main -->
 <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1><?php echo $pagina;?></h1>
+      <h1><?php echo $tituloPagina;?></h1>
         <nav>
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="index.php">Inicio</a></li>
-                <li class="breadcrumb-item active"><?php echo $pagina;?></li>
+                <li class="breadcrumb-item active"><?php echo $tituloPagina;?></li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
@@ -46,53 +55,110 @@ include_once 'sidebar/sidebar.php';
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title"> Contratos de Aluguer</h5>
-
+                  <h5 class="card-title"> Consultar Veículos</h5>
+                    
                   <table class="table table-bordered border-primary">
                     <thead>
                       <tr>
-                        <th scope="col">Veículo</th>
-                        <th scope="col">Data Levantamento</th>
-                        <th scope="col">Data Devolução</th>
-                        <th scope="col">Valor</th>
-                        <th scope="col">Status Pagam.</th>
-                        <th scope="col">Cliente</th>
-                        <th scope="col">Motorista</th>
+                        <th scope="col">Imagem</th>
+                        <th scope="col">Modelo</th>
+                        <th scope="col">Ano</th>
+                        <th scope="col">Placa</th>
+                        <th scope="col">Disponivel</th>
+                        <th scope="col">Valor Diário</th>
                         <th scope="col">Acção</th>
                       </tr>
                     </thead>
                     <?php
-                        $sql="SELECT marca,modelo,dataInicio,dataFim,statusPagamento,valorAluguel,ur.nome as motorista,us.nome as cliente FROM aluguer alu inner join veiculo vl on alu.idVeiculo = vl.idVeiculo join cliente cl on alu.idCliente = cl.idCliente join motorista mt on alu.idMotorista = mt.idMotorista join usuario us on cl.idUsuario = us.idUsuario join usuario ur on mt.idUsuario = ur.idUsuario  ORDER BY marca DESC";
-                        $query = mysqli_query($conexao,$sql);
-                        while ($dados=mysqli_fetch_array($query)) :
-                            $veiculo = $dados['marca']."".$dados['modelo'];
-                            $dataLevantamento = $dados['dataInicio'];
-                            $dataDevolucao = $dados['dataFim'];
-                            $valorAluguer = $dados['valorAluguel'];
-                            $statusPagamento = $dados['statusPagamento'];
-                            $Cliente = $dados['cliente'];
-                            $motorista = $dados['motorista'];
+                      //Pesquisar carro
+                      if(!empty($_GET['pesquisar'])) {
+                        $dados = $_GET['pesquisar'];
+                        $EstadoCarro ="Apagado";
+                        $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros WHERE estadoCarro != '$EstadoCarro' and Modelo like '%$dados%' ORDER BY Modelo LIMIT $inicio, $qnt_result_pg";
+                      }else {
+                        $EstadoCarro ="Apagado";
+                        $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros WHERE estadoCarro != '$EstadoCarro' ORDER BY Modelo LIMIT $inicio, $qnt_result_pg";
+                      }
+                      $query = mysqli_query($conexao,$sql);
+                      while ($dados=mysqli_fetch_array($query)) :
+                        $CarroID = $dados['CarroID'];  
+                        $Imagem = $dados['Imagem'];
+                        $Modelo = $dados['Modelo'];
+                        $Ano = $dados['Ano'];
+                        $Placa = $dados['Placa'];
+                        $Diponivel = $dados['Disponivel'];
+                        $ValorDiaria = $dados['ValorDiaria'];
+                        $Lugar = $dados['Lugar'];
+                        $Bagageira = $dados['Bagageira'];
+                        $Conforto = $dados['Conforto'];
+                        $Porta = $dados['Porta'];
+                        $MotorSeguranca = $dados['MotorSeguranca'];
                     ?>
                     <tbody>
                       <tr>
-                        <th scope="row"><a href="#"><?php echo $veiculo;?></a></th>
-                        <td><?php echo $dataLevantamento;?></td>
-                        <td><a href="#" class="text-primary"><?php echo $dataDevolucao;?></a></td>
-                        <td><?php echo $valorAluguer;?></td>
-                        <td><span class="badge bg-success"><?php echo $statusPagamento;?></span></td>
-                        <td><a href="#" class="text-primary"><?php echo $Cliente;?></a></td>
-                        <td><?php echo $motorista;?></td>
+                        <th><img src="../imagens/carros/<?php echo $Imagem;?>" width="100" alt="<?php echo $Modelo;?>"></th>
+                        <td><?php echo $Modelo;?></td>
+                        <td><a href="#" class="text-primary"><?php echo $Ano;?></a></td>
+                        <td><span class="badge bg-success"><?php echo $Placa;?></span></td>
+                        <td><?php echo $Diponivel == 1 ? "<a class='btn btn-warning' disabled href='carro/disponivel.php?Disponivel=Sim&id=$CarroID'><i class='bi-undo'></i> Sim</a>":"<a class='btn btn-dark' href='carro/disponivel.php?Disponivel=Não&id=$CarroID'><i class='bi-undo'></i> Não</a>";?></td>
+                        <td><?php echo number_format($ValorDiaria,2,",",".");?></td>
                         <td> 
-                            <span class="badge bg-secondary"><i class="bi bi-exclamation-octagon me-1"></i> Alterar</span> 
-                            <span class="badge bg-danger"><i class="bi bi-exclamation-octagon me-1"></i> Apagar</span>
+                          <div class="btn-group">
+                            <a class="btn btn-secondary" href="../imprimir/carro.php?id=<?php echo $CarroID;?>"><i   class="bi-eye"></i></a>
+                            <a class="btn btn-primary" href="edit_veiculo.php?id=<?php echo $CarroID;?>"><i class="ri-edit-line"></i></a>
+                            <a class="btn btn-danger" href="carro/deletar.php?id=<?php echo $CarroID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
+                          </div>
                         </td>
-                       
                       </tr>
                     </tbody>
-                    <?php endwhile;?>
+                    <?php endwhile;
+                      //Somar todos os registros 
+                      $EstadoCarro ="Apagado";
+                      $result_pg="SELECT Count(CarroID) as NumID FROM carros WHERE estadoCarro != '$EstadoCarro' ORDER BY Modelo";
+                      $resultado_pg = mysqli_query($conexao, $result_pg);
+                      $row_pg = mysqli_fetch_assoc($resultado_pg);
+                      //echo $row_pg['num_result'];
+                      //Quantidade de pagina 
+                      $quantidade_pg = ceil($row_pg['NumID'] / $qnt_result_pg);
+                    ?>
                   </table>
 
                 </div>
+                <!--paginação start-->
+                <section class="panel">
+                  <div class="panel-body">
+                      <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                          <?php	
+                            //selecionador de página a visualizar
+                            //Limitar os link antes depois
+                            $max_links = 3; 
+                          ?>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=1'>Anterior</a>"?></li>
+                          <?php 
+                              for($pag_ant = $pagina - $max_links; $pag_ant <= $pagina - 1; $pag_ant++){
+                              if($pag_ant >= 1){
+                          ?>
+
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$pag_ant'>$pag_ant</a>"?></li>
+                          <?php	}
+                          } ?>
+
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$pagina'> $pagina</a>";?></li>
+
+                          <?php 
+                              for($pag_dep = $pagina + 1; $pag_dep <= $pagina + $max_links; $pag_dep++){
+                              if($pag_dep <= $quantidade_pg){ 
+                          ?>		
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$pag_dep'>$pag_dep</a>";?></li>
+                          <?php	}
+                          } ?>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$quantidade_pg'>Proximo</a>"?></li>
+                        </ul>
+                      </nav> 
+                  </div>
+                </section>
+                <!--paginação end-->
 
               </div>
             </div><!-- End Recent Sales -->
@@ -106,77 +172,45 @@ include_once 'sidebar/sidebar.php';
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Adicionar Aluguer</h5>
+            <h5 class="modal-title">Cadastrar Veículo</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Dados do Aluguer de Veículo</h5>
+                <h5 class="card-title">Dados do Veículo</h5>
 
                 <!-- No Labels Form -->
-                <form class="row g-3" method="POST" action="aluguel/inserir.php">
-                  <div class="col-md-4">
-                    <select id="inputState" name="idCliente" class="form-select">
-                      <option value="">Cliente</option>
-                      <?php 
-                        $sql="SELECT idCliente,nome FROM cliente cl inner join usuario us on cl.idUsuario = us.idUsuario ORDER BY idCliente DESC";
-                        $query = mysqli_query($conexao,$sql);
-                        while ($dados=mysqli_fetch_array($query)):
-                            $idCliente = $dados['idCliente'];
-                            $nome = $dados['nome'];
-                      ?>
-                      <option value="<?php echo $idCliente;?>"><?php echo $nome;?></option>
-                      <?php endwhile?>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <select id="inputState" name="idVeiculo" class="form-select">
-                      <option value="">Veículo</option>
-                      <?php 
-                        $sql="SELECT idVeiculo,marca,modelo FROM veiculo ORDER BY idVeiculo DESC";
-                        $query = mysqli_query($conexao,$sql);
-                        while ($dados=mysqli_fetch_array($query)):
-                            $idVeiculo = $dados['idVeiculo'];
-                            $marca = $dados['marca'];
-                            $modelo = $dados['modelo'];
-                      ?>
-                      <option value="<?php echo $idVeiculo;?>"><?php echo $marca." ".$modelo;?></option>
-                      <?php endwhile?>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <select id="inputState" name="idMotorista" class="form-select">
-                      <option selected="">Motorista</option>
-                      <option value="Sem Motorista">Sem Motorista</option>
-                      <?php 
-                        $sql="SELECT idMotorista,nome FROM motorista mt inner join usuario us on mt.idUsuario = us.idUsuario ORDER BY idMotorista DESC";
-                        $query = mysqli_query($conexao,$sql);
-                        while ($dados=mysqli_fetch_array($query)):
-                            $idMotorista = $dados['idMotorista'];
-                            $nome = $dados['nome'];
-                      ?>
-                      <option value="<?php echo $idMotorista;?>"><?php echo $nome;?></option>
-                      <?php endwhile?>
-                    </select>
+                <form class="row g-3" method="POST" action="carro/inserir.php" enctype="multipart/form-data">
+                  <div class="col-md-6">
+                    <input type="text" name="modelo" class="form-control" placeholder="Modelo" autocomplete="off" >
                   </div>
                   <div class="col-md-6">
-                    <input type="datetime-local" name="dataLevantamento" class="form-control" placeholder="Data de Levantamento">
-                    *Data de Levantamento.
+                    <input type="text" name="ano" class="form-control" placeholder="Ano" autocomplete="off" >
                   </div>
                   <div class="col-md-6">
-                    <input type="datetime-local" name="dataDevolucao" class="form-control" placeholder="Data de Devolução">
-                    *Data de Devolução.
+                    <input type="text" name="placa" class="form-control" placeholder="Placa" autocomplete="off" >
                   </div>
                   <div class="col-6">
-                    <input type="number" class="form-control" name="valorAluger" placeholder="Valor do Aluguer">
+                    <input type="number" class="form-control" name="valorDiario" placeholder="Valor Diário" autocomplete="off" >
                   </div>
-                  <div class="col-md-4">
-                    <select id="inputState" name="statusPagamento" class="form-select">
-                      <option value="">Status Pagamento</option>
-                      <option>Pendente</option>
-                      <option>Pago</option>
-                    </select>
+                  <div class="col-6">
+                    <input type="text" class="form-control" name="porta" placeholder="Portas" autocomplete="off" >
+                  </div>
+                  <div class="col-6">
+                    <input type="text" class="form-control" name="lugar" placeholder="Lugares" autocomplete="off" >
+                  </div>
+                  <div class="col-6">
+                    <input type="text" class="form-control" name="bagageira" placeholder="Bagageira" autocomplete="off" >
+                  </div>
+                  <div class="col-6">
+                    <input type="text" class="form-control" name="motorSeguranca" placeholder="Motor e Segurança" autocomplete="off" >
+                  </div>
+                  <div class="col-6">
+                    <input type="text" class="form-control" name="conforto" placeholder="Conforto" autocomplete="off">
+                  </div>
+                  <div class="col-md-6">
+                    <input type="file" name="imagem" class="form-control" placeholder="Imagem">
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -191,7 +225,19 @@ include_once 'sidebar/sidebar.php';
       </div>
     </div><!-- End Extra Large Modal-->
 </main><!-- End #main -->
- 
+
+<script>
+//Pesquisar com js
+var pesquisar = document.getElementById('pesquisar');
+pesquisar.addEventListener("Keydown", function(event){
+if (event.Key === "Enter") {
+    searchData();
+}
+});
+
+function searchData(){
+    window.location = 'veiculo.php?pesquisar='+pesquisar.value;
+}
 <?php
 //-- ======= Footer ======= -->
 include_once 'footer/footer.php';
