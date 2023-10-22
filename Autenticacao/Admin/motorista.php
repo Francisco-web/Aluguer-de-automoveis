@@ -74,10 +74,10 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                       if(!empty($_GET['pesquisar'])) {
                         $dados = $_GET['pesquisar'];
                         $EstadoUsuario="Activo";
-                        $sql="SELECT Imagem,MotoristaID,Nome, CartaConducao, Telefone, Endereco FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoUsuario ='$EstadoUsuario' and Nome like '%$dados%' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
+                        $sql="SELECT Imagem,MotoristaID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoMotorista='$EstadoMotorista' and Nome like '%$dados%' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }else {
-                        $EstadoUsuario="Activo";
-                        $sql="SELECT Imagem,MotoristaID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoUsuario ='$EstadoUsuario' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
+                        $EstadoMotorista="Activo";
+                        $sql="SELECT Imagem,MotoristaID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco,m.UsuarioID FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoMotorista ='$EstadoMotorista' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }
                       $query = mysqli_query($conexao,$sql);
                       while ($dados=mysqli_fetch_array($query)) :
@@ -88,6 +88,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                         $Telefone = $dados['Telefone'];
                         $Estadousuario = $dados['EstadoUsuario'];
                         $Endereco = $dados['Endereco'];
+                        $UsuarioID = $dados['UsuarioID'];
                     ?>
                     <tbody>
                       <tr>
@@ -96,20 +97,20 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                         <td class="text-primary"><?php echo $CartaConducao;?></td>
                         <td><?php echo $Telefone;?></td>
                         <td><?php echo $Endereco;?></td>
-                        <td><?php echo $Estadousuario == 'Activo' ? "<a class='btn btn-warning' disabled href='carro/disponivel.php?Disponivel=Sim&id=$MotoristaID'><i class='bi-undo'></i> Activo</a>":"<a class='btn btn-dark' href='carro/disponivel.php?Disponivel=Não&id=$MotoristaID'><i class='bi-undo'></i> Inactivo</a>";?></td>
+                        <td><?php echo $Estadousuario == 'Activo' ? "<a class='btn btn-warning' disabled href='motorista/disponivel.php?Disponivel=Activo&id=$UsuarioID'><i class='bi-undo'></i> $Estadousuario</a>":"<a class='btn btn-dark' href='motorista/disponivel.php?Disponivel=Inactivo&id=$UsuarioID'><i class='bi-undo'></i>$Estadousuario</a>";?></td>
                         <td> 
                           <div class="btn-group">
-                            <a class="btn btn-secondary" href="../imprimir/carro.php?id=<?php echo $MotoristaID;?>"><i   class="bi-eye"></i></a>
+                            <a class="btn btn-secondary" href="../imprimir/motorista.php?id=<?php echo $MotoristaID;?>"><i   class="bi-eye"></i></a>
                             <a class="btn btn-primary" href="edit_veiculo.php?id=<?php echo $MotoristaID;?>"><i class="ri-edit-line"></i></a>
-                            <a class="btn btn-danger" href="carro/deletar.php?id=<?php echo $MotoristaID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
+                            <a class="btn btn-danger" href="motorista/deletar.php?id=<?php echo $MotoristaID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
                           </div>
                         </td>
                       </tr>
                     </tbody>
                     <?php endwhile;
                       //Somar todos os registros 
-                      $EstadoCarro ="Apagado";
-                      $result_pg="SELECT Count(CarroID) as NumID FROM carros WHERE estadoCarro != '$EstadoCarro' ORDER BY Modelo";
+                      $EstadoMotorista ="Apagado";
+                      $result_pg="SELECT Count(MotoristaID) as NumID FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoMotorista !='$EstadoMotorista'";
                       $resultado_pg = mysqli_query($conexao, $result_pg);
                       $row_pg = mysqli_fetch_assoc($resultado_pg);
                       //echo $row_pg['num_result'];
@@ -129,26 +130,26 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                             //Limitar os link antes depois
                             $max_links = 3; 
                           ?>
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=1'>Anterior</a>"?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='motorista.php?pagina=1'>Anterior</a>"?></li>
                           <?php 
                               for($pag_ant = $pagina - $max_links; $pag_ant <= $pagina - 1; $pag_ant++){
                               if($pag_ant >= 1){
                           ?>
 
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$pag_ant'>$pag_ant</a>"?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='motorista.php?pagina=$pag_ant'>$pag_ant</a>"?></li>
                           <?php	}
                           } ?>
 
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$pagina'> $pagina</a>";?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='motorista.php?pagina=$pagina'> $pagina</a>";?></li>
 
                           <?php 
                               for($pag_dep = $pagina + 1; $pag_dep <= $pagina + $max_links; $pag_dep++){
                               if($pag_dep <= $quantidade_pg){ 
                           ?>		
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$pag_dep'>$pag_dep</a>";?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='motorista.php?pagina=$pag_dep'>$pag_dep</a>";?></li>
                           <?php	}
                           } ?>
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$quantidade_pg'>Proximo</a>"?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='motorista.php?pagina=$quantidade_pg'>Proximo</a>"?></li>
                         </ul>
                       </nav> 
                   </div>
@@ -182,17 +183,17 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                     <input type="text" name="nome" class="form-control" placeholder="Nome" autocomplete="off" required>
                   </div>
                   <div class="col-md-6">
-                    <input type="text" name="Telefone" class="form-control" placeholder="Telefone" autocomplete="off" required>
+                    <input type="text" name="telefone" class="form-control" placeholder="Telefone" autocomplete="off" required>
                   </div>
                   <div class="col-md-6">
-                    <input type="text" name="cartaConducao" class="form-control" placeholder="Nº Carta de Condução" autocomplete="off"required >
+                    <input type="text" name="cartaConducao" class="form-control" placeholder="Nº Carta de Condução" autocomplete="off" required >
                   </div>
                   <div class="col-md-6">
                     <textarea name="endereco" id="endereco" required class="form-control" cols="5" rows="3" placeholder="Endereço"></textarea>
                   </div>
                   <p><strong>Dados de Usuário</strong></p>
                   <div class="col-6">
-                    <input type="Email" class="form-control" name="emali" placeholder="Email" autocomplete="off" required>
+                    <input type="Email" class="form-control" name="email" placeholder="Email" autocomplete="off" required>
                   </div>
                   <div class="col-6">
                     <input type="text" class="form-control" name="senha" minlenth="6" placeholder="Senha" autocomplete="off" required>
@@ -224,7 +225,7 @@ if (event.Key === "Enter") {
 });
 
 function searchData(){
-    window.location = 'veiculo.php?pesquisar='+pesquisar.value;
+    window.location = 'motorista.php?pesquisar='+pesquisar.value;
 }
 <?php
 //-- ======= Footer ======= -->

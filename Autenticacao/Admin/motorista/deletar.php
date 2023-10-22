@@ -6,35 +6,11 @@ include_once '../../config_db.php';
 session_start();
 ob_start();
 
-//Mudar estado para não visualizar registo
-if (isset($_GET['ID'])&& isset($_GET['Apagar'])) {
- //Consulta para mudar estado
-  $ID = $_GET['ID'];
-  $Estado = 'Apagado';
-  $sql="UPDATE `carros` SET `estadoCarro` = 'Apagado' WHERE `carros`.`CarroID` = $ID";
-  if (mysqli_query($conexao,$sql)){
-    //mensagem de sucesso de erro
-    $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-    Cadastro de Veículo Apagado.
-    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-    </div>";
-    header('../veiculo.php');
-  }else {
-    //mensagem de sucesso de erro
-    $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-    Erro: Cadastro de Veículo Não Apagado.
-    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-    </div>";
-    header('../veiculo.php');
-  }
-  
-}
-
 if (isset($_GET['id'])) {
-    $CarroID = $_GET['id'];
+    $MotoristaID= $_GET['id'];
     $Estado = 'Apagado';
     //Consulta para apagar registo de aluguer
-    $sql="UPDATE `carros` SET `estadoCarro` = ? WHERE `carros`.`CarroID` = ?";
+    $sql="UPDATE `motoristas` SET `EstadoMotorista` = ? WHERE `motoristas`.`MotoristaID` = ?";
     //Preparar a consulta
     $preparar=mysqli_prepare($conexao,$sql);
     if ($preparar==false) {
@@ -42,25 +18,25 @@ if (isset($_GET['id'])) {
         Erro na Preparação da Consulta!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
       </div>";
-      header("location:../veiculo.php");
+      header("location:../motorista.php");
     }
     //VInvular os parametros
-    mysqli_stmt_bind_param($preparar,"si",$Estado,$CarroID);
+    mysqli_stmt_bind_param($preparar,"si",$Estado,$MotoristaID);
     //Exeucutar a preparação 
     if (mysqli_stmt_execute($preparar)) {
         //mensagem de sucesso
         $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-        Cadastro de Veículo Apagado.
+        Cadastro de Motorista Apagado.
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
       </div>";
-      header('location:../veiculo.php');
+      header('location:../motorista.php');
     }else {
         //mensagem de sucesso de erro
         $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-        Erro: Cadastro de Veículo Não Apagado.
+        Erro: Cadastro do Motorista Não Apagado.
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
       </div>";
-      header('../veiculo.php');
+      header('../motorista.php');
     }
 }
 //Fechar a e consulta e a conexao
