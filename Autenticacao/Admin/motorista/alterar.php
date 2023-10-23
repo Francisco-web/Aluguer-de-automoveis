@@ -5,61 +5,71 @@ ob_start();
 
 //Botão Cancelar- leva o usuario a pagina aluguer.php
 if(isset($_POST['cancelar'])){
-    header('location: ../veiculo.php');
+    header('location: ../motorista.php');
 }
 //Verficar o metodo que trás os dados
 if (isset($_POST['actualizar'])) {
-  $Modelo = mysqli_escape_string($conexao,$_POST['modelo']);
-  $Ano = mysqli_escape_string($conexao,$_POST['ano']);
-  $Placa = mysqli_escape_string($conexao,$_POST['placa']);
-  $ValorDiario = mysqli_escape_string($conexao,$_POST['valorDiario']);
-  $Descricao = mysqli_escape_string($conexao,$_POST['descricao']);
-  $CarroID = mysqli_escape_string($conexao,$_POST['CarroID']);
+  $Nome =  mysqli_escape_string($conexao,$_POST['nome']);
+  $CartaConducao =  mysqli_escape_string($conexao,$_POST['cartaConducao']);
+  $Telefone =  mysqli_escape_string($conexao,$_POST['telefone']);
+  $Endereco =  mysqli_escape_string($conexao,$_POST['endereco']);
+  $EstadoMotorista = 'Activo';
+  $MotoristaID = mysqli_escape_string($conexao,$_POST['MotoristaID']);
 
-  if(empty($Modelo)){
-      $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-      Digite o Modelo do Veículo!
-      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+  //Dado de Usuario
+  $Email =  mysqli_escape_string($conexao,$_POST['email']);
+  $Senha =  mysqli_escape_string($conexao,$_POST['senha']);
+  $Senha = password_hash($Senha,PASSWORD_DEFAULT);
+  $UsuarioID = mysqli_escape_string($conexao,$_POST['UsuarioID']);
+ 
+  if(empty($Nome)){
+    $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+    Digite o seu Nome!
+    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
     </div>";
-    header("location:../veiculo.php");
-  }elseif(empty($Ano)){
-      $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-      Inisira o Ano do Veículo!
-      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+    header("location:../motorista.php");
+  }elseif(empty($CartaConducao)){
+    $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+    Insira o Nº da Carta de Condução!
+    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
     </div>";
-    header("location:../veiculo.php");
-  }elseif(empty($Placa)){
-      $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-      Insira a Placa ou Matrícula do Veículo!
-      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+    header("location:../motorista.php");
+  }elseif(empty($Telefone)){
+    $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+    Insira o Seu Número de Telefone!
+    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
     </div>";
-    header("location:../veiculo.php");
-  }elseif(empty($ValorDiario)){
-      $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-      Inisira o Valor Diário do Veículo!
-      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+    header("location:../motorista.php");
+  }elseif(empty($Endereco)){
+    $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+    Digite o seu Endereço
+    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
     </div>";
-    header("location:../veiculo.php");
-  }else {
+    header("location:../motorista.php");
+  }elseif(empty($Email)){
+    $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+    Digite o seu Endereço de Email!
+    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+    </div>";
+    header("location:../motorista.php");
+  }else{
     //verificar se existe um veiculo com este nome
-    $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria FROM carros  ORDER BY Modelo";
+    $sql="SELECT m.CartaConducao FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoMotorista = 'Activo' and MotoristaID != $MotoristaID";
     $query = mysqli_query($conexao,$sql);
     $dados=mysqli_fetch_array($query);
-    $ModeloAnterior = $dados['Modelo'];
-    $AnoAnterior = $dados['Ano'];
-    $ValorDiariaAnterior = $dados['ValorDiaria'];
+    $CartaConducaoAnterior = $dados['CartaConducao'];
 
-    if($Modelo == "$ModeloAnterior" && $Ano == "$AnoAnterior" && $ValorDiario == "$ValorDiariaAnterior" ){
+    if($CartaConducao == "$CartaConducaoAnterior"){
       $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-      Este Veículo já está Cadastrado!
+      Esta Carta de Condução já está Registrada!
       <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
       </div>";
-      header("location:../veiculo.php");
+      header("location:../motorista.php");
     }else{
         
 
       //Consulta para inserir marcacao de Aluguer
-      $sql ="UPDATE `carros` SET `Modelo` = ?, `Ano` = ?, `Descricao` = ?, `ValorDiaria` = ? WHERE `carros`.`CarroID` = $CarroID";
+      $sql ="UPDATE `motoristas` SET `Nome` = ?, `CartaConducao` = ?, `Telefone` = ?, `Endereco` = ? WHERE `motoristas`.`MotoristaID` = ?";
       //Preparar a consulta
       $preparar = mysqli_prepare($conexao,$sql);
       if ($preparar==false) {
@@ -67,24 +77,54 @@ if (isset($_POST['actualizar'])) {
         Erro na Preparação da Consulta!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
-        header("location:../veiculo.php");
+        header("location:../motorista.php");
       }
       //vincular os parametros
-      mysqli_stmt_bind_param($preparar,"sssd",$Modelo,$Ano,$Descricao,$ValorDiario);
+      mysqli_stmt_bind_param($preparar,"ssssi",$Nome,$CartaConducao,$Telefone,$Endereco,$MotoristaID);
 
       //Executar a consulta
       if (mysqli_stmt_execute($preparar)) {
           $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-          Dados do Veículo Actualizados com Sucesso.
+          Dados do Motorista Actualizados com Sucesso.
           <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
           </div>";
-          header("location:../veiculo.php");
+          header("location:../motorista.php");
       }else {
           $_SESSION['msg']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-          Erro ao Actualizar Dados do Veículo!
+          Erro ao Actualizar Dados do Motorista!
           <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
           </div>";
-          header("location:../veiculo.php");
+          header("location:../motorista.php");
+      }
+
+      //DADOS DO USUÁRIO
+      //Consulta para inserir marcacao de Aluguer
+      $sql ="UPDATE `usuarios` SET `Email` = ?, `Senha` = ? WHERE `usuarios`.`UsuarioID` = ?";
+      //Preparar a consulta
+      $preparar = mysqli_prepare($conexao,$sql);
+      if ($preparar==false) {
+        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+        Erro na Preparação da Consulta!
+        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+        </div>";
+        header("location:../motorista.php");
+      }
+      //vincular os parametros
+      mysqli_stmt_bind_param($preparar,"ssi",$Nome,$Senha,$UsuarioID);
+
+      //Executar a consulta
+      if (mysqli_stmt_execute($preparar)) {
+        $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
+        Dados do Usuário Actualizados com Sucesso.
+        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+        </div>";
+        header("location:../motorista.php");
+      }else {
+        $_SESSION['msg']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+        Erro ao Actualizar Dados do Usuário!
+        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+        </div>";
+        header("location:../motorista.php");
       }
           
     } 

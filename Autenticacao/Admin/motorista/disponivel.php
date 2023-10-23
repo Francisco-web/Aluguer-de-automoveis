@@ -12,7 +12,7 @@ if (isset($_GET['Disponivel']) && isset($_GET['id'])) {
     $UsuarioID = $_GET['id'];
     $Disponivel = $_GET['Disponivel'];// verifica o valor da Url(Não)
 
-    if ($Disponivel == 'Não') {
+    if ($Disponivel == 'Inactivo') {
         $DisponivelUsuario = 'Activo';//Disponivel = Activo/ indiponivel = Inactivo
     }else{
         $DisponivelUsuario = 'Inactivo';//Disponivel = Activo/ indiponivel = Inactivo

@@ -55,7 +55,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title"> Consultar Veículos</h5>
+                  <h5 class="card-title"> Consultar Motorista</h5>
                     
                   <table class="table table-bordered border-primary">
                     <thead>
@@ -63,6 +63,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                         <th scope="col">Imagem</th>
                         <th scope="col">Nome</th>
                         <th scope="col">Nº Carta de Condução</th>
+                        <th scope="col">Email</th>
                         <th scope="col">Telefone</th>
                         <th scope="col">Endereco</th>
                         <th scope="col">Situação</th>
@@ -77,7 +78,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                         $sql="SELECT Imagem,MotoristaID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoMotorista='$EstadoMotorista' and Nome like '%$dados%' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }else {
                         $EstadoMotorista="Activo";
-                        $sql="SELECT Imagem,MotoristaID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco,m.UsuarioID FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoMotorista ='$EstadoMotorista' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
+                        $sql="SELECT Imagem,MotoristaID,Nome,CartaConducao,Email,EstadoUsuario,Telefone,Endereco,m.UsuarioID FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoMotorista ='$EstadoMotorista' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }
                       $query = mysqli_query($conexao,$sql);
                       while ($dados=mysqli_fetch_array($query)) :
@@ -89,19 +90,21 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                         $Estadousuario = $dados['EstadoUsuario'];
                         $Endereco = $dados['Endereco'];
                         $UsuarioID = $dados['UsuarioID'];
+                        $Email = $dados['Email'];
                     ?>
                     <tbody>
                       <tr>
-                        <th><img src="../imagens/usuarios/<?php echo $Imagem;?>" width="100" alt="<?php echo $Nome;?>"></th>
+                        <th><img src="../imagens/usuarios/<?php echo $Imagem;?>" width="100" height="80" alt="<?php echo $Nome;?>"></th>
                         <td><?php echo $Nome;?></td>
                         <td class="text-primary"><?php echo $CartaConducao;?></td>
+                        <td><?php echo $Email;?></td>
                         <td><?php echo $Telefone;?></td>
                         <td><?php echo $Endereco;?></td>
                         <td><?php echo $Estadousuario == 'Activo' ? "<a class='btn btn-warning' disabled href='motorista/disponivel.php?Disponivel=Activo&id=$UsuarioID'><i class='bi-undo'></i> $Estadousuario</a>":"<a class='btn btn-dark' href='motorista/disponivel.php?Disponivel=Inactivo&id=$UsuarioID'><i class='bi-undo'></i>$Estadousuario</a>";?></td>
                         <td> 
                           <div class="btn-group">
                             <a class="btn btn-secondary" href="../imprimir/motorista.php?id=<?php echo $MotoristaID;?>"><i   class="bi-eye"></i></a>
-                            <a class="btn btn-primary" href="edit_veiculo.php?id=<?php echo $MotoristaID;?>"><i class="ri-edit-line"></i></a>
+                            <a class="btn btn-primary" href="edit_motorista.php?id=<?php echo $MotoristaID;?>"><i class="ri-edit-line"></i></a>
                             <a class="btn btn-danger" href="motorista/deletar.php?id=<?php echo $MotoristaID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
                           </div>
                         </td>
@@ -189,7 +192,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                     <input type="text" name="cartaConducao" class="form-control" placeholder="Nº Carta de Condução" autocomplete="off" required >
                   </div>
                   <div class="col-md-6">
-                    <textarea name="endereco" id="endereco" required class="form-control" cols="5" rows="3" placeholder="Endereço"></textarea>
+                    <textarea name="endereco" id="endereco" autocomplete="off" required class="form-control" cols="5" rows="3" placeholder="Endereço"></textarea>
                   </div>
                   <p><strong>Dados de Usuário</strong></p>
                   <div class="col-6">

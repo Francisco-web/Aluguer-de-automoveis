@@ -10,6 +10,7 @@ if (isset($_POST['add'])) {
   $CartaConducao =  mysqli_escape_string($conexao,$_POST['cartaConducao']);
   $Telefone =  mysqli_escape_string($conexao,$_POST['telefone']);
   $Endereco =  mysqli_escape_string($conexao,$_POST['endereco']);
+  $EstadoMotorista = 'Activo';
   $Imagem = $_FILES['imagem'];
 
   //Dado de Usuario
@@ -27,7 +28,7 @@ if (isset($_POST['add'])) {
       header("location:../motorista.php");
     }elseif(empty($CartaConducao)){
         $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-         Insira o Nº da Carta de Condução!
+        Insira o Nº da Carta de Condução!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../motorista.php");
@@ -149,7 +150,7 @@ if (isset($_POST['add'])) {
                     //Obter ID de usuario
                     $usuarioID = mysqli_insert_id($conexao);
                     //Consulta para inserir Motorista
-                    $sql ="INSERT INTO `motoristas` (Imagem,`Nome`,`CartaConducao`, `Telefone`, `Endereco`,`UsuarioID`) VALUES (?,?,?,?,?,?)";
+                    $sql ="INSERT INTO `motoristas` (Imagem,`Nome`,`CartaConducao`, `Telefone`, `Endereco`,`EstadoMotorista`,`UsuarioID`) VALUES (?,?,?,?,?,?,?)";
                     //Preparar a consulta
                     $preparar = mysqli_prepare($conexao,$sql);
                     if ($preparar==false) {
@@ -160,7 +161,7 @@ if (isset($_POST['add'])) {
                         header("location:../motorista.php");
                     }
                     //vincular os parametros
-                    mysqli_stmt_bind_param($preparar,"sssisi",$Imagem,$Nome,$CartaConducao,$Telefone,$Endereco,$usuarioID);
+                    mysqli_stmt_bind_param($preparar,"sssissi",$Imagem,$Nome,$CartaConducao,$Telefone,$Endereco,$EstadoMotorista,$usuarioID);
 
                     //Executar a consulta
                     if (mysqli_stmt_execute($preparar)) {
