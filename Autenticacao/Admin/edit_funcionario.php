@@ -1,5 +1,5 @@
 <?php
-$pagina ="Actualizar Dados do Veículos";
+$pagina ="Actualizar Dados do Funcionário";
 // ======= Head ======= -->
 include_once 'head/head.php';
 
@@ -13,20 +13,14 @@ include_once 'sidebar/sidebar.php';
 if (isset($_GET['id'])) {
   $id = mysqli_escape_string($conexao,$_GET['id']);
   //Consulta no banco para mostar os dados do motorista
-  $sql="SELECT Imagem,MotoristaID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco,m.UsuarioID,u.Senha,u.Email FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE MotoristaID = '$id' ";
+  $sql="SELECT FuncionarioID,EstadoUsuario,fc.UsuarioID,Nome,Email FROM funcionarios fc inner join usuarios u on fc.UsuarioID = u.UsuarioID ORDER BY Nome ";
   $query = mysqli_query($conexao,$sql);
   $dados=mysqli_fetch_array($query);
-  $Imagem = $dados['Imagem']; 
-  $MotoristaID = $dados['MotoristaID'];  
+  $FuncionarioID = $dados['FuncionarioID'];  
   $Nome = $dados['Nome'];
-  $CartaConducao = $dados['CartaConducao'];
-  $Telefone = $dados['Telefone'];
   $Estadousuario = $dados['EstadoUsuario'];
-  $Endereco = $dados['Endereco'];
-  //Dados do Usuario
   $UsuarioID = $dados['UsuarioID'];
   $Email = $dados['Email'];
-  $Senha = $dados['Senha'];
 }
 ?> 
 
@@ -65,35 +59,19 @@ if (isset($_GET['id'])) {
                         <h5 class="card-title"></h5>
 
                         <!-- No Labels Form -->
-                        <form class="row g-3" method="POST" action="motorista/alterar.php">
-                          <input type="text" class="form-control" value="<?php echo $MotoristaID;?>" name="MotoristaID">
-                          <input type="text" class="form-control" value="<?php echo $UsuarioID;?>" name="UsuarioID">
-                          <div class="col-md-6">
-                            <img src="../imagens/usuarios/<?php echo $Imagem;?>" width="200px" height="200px"  alt="<?php echo $Nome;?>">
-                          </div>
-                          <p><strong>Dados Pessoais</strong></p>
+                        <form class="row g-3" method="POST" action="funcionario/alterar.php">
+                          <input type="hidden" class="form-control" value="<?php echo $FuncionarioID;?>" name="FuncionarioID">
+                          <input type="hidden" class="form-control" value="<?php echo $UsuarioID;?>" name="UsuarioID">
                           <div class="col-md-6">
                             <input type="text" name="nome" class="form-control" placeholder="Nome" autocomplete="off" minlength="4" value="<?php echo $Nome;?>"  required>
                           </div>
-                          <div class="col-md-6">
-                            <input type="text" name="telefone" class="form-control" placeholder="Telefone" autocomplete="off" minlength="9" value="<?php echo $Telefone;?>" required>
-                          </div>
-                          <div class="col-md-6">
-                            <input type="text" name="cartaConducao" readonly minlength="6" class="form-control" placeholder="Nº Carta de Condução" autocomplete="off" value="<?php echo $CartaConducao;?>" required >
-                          </div>
-                          <div class="col-md-6">
-                            <textarea name="endereco" id="endereco" autocomplete="off" required class="form-control" cols="5" rows="3" placeholder="Endereço"><?php echo $Endereco;?></textarea>
-                          </div>
-                          <p><strong>Dados de Usuário</strong></p>
                           <div class="col-6">
                             <input type="email" class="form-control" name="email" placeholder="Email" autocomplete="off" value="<?php echo $Email;?>" required>
-                          </div>
-                          <div class="col-6">
-                            <input type="text" class="form-control" name="senha" minlength="6" placeholder="Nova Senha" autocomplete="off" >
                           </div>
                           <div class="text-center">
                             <button type="submit" name="cancelar" class="btn btn-secondary" >Cancelar</button>
                             <button type="submit" name="actualizar" class="btn btn-primary">Actualizar</button>
+                          <button type="submit" name="redefinir_senha" class="btn btn-warning">Restaurar Senha</button>
                           </div>
                         </form>
                       </div>

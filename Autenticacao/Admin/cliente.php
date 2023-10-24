@@ -75,7 +75,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                       if(!empty($_GET['pesquisar'])) {
                         $dados = $_GET['pesquisar'];
                         $EstadoCliente="Apagado";
-                        $sql="SELECT cl.UsuarioID,ClienteID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco,NumDocumento,Documento,Email FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID WHERE EstadoCliente = '$EstadoCliente' and Nome like '%$dados%' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
+                        $sql="SELECT cl.UsuarioID,ClienteID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco,NumDocumento,Documento,Email FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID WHERE EstadoCliente != '$EstadoCliente' and Nome like '%$dados%' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }else {
                         $EstadoCliente="Apagado";
                         $sql="SELECT cl.UsuarioID,ClienteID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco,NumDocumento,Documento,Email FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID WHERE EstadoCliente != '$EstadoCliente' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";

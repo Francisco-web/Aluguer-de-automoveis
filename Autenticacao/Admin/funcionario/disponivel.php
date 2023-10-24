@@ -26,7 +26,7 @@ if (isset($_GET['Disponivel']) && isset($_GET['id'])) {
             Erro na Preparação da Consulta!
             <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
-        header("location:../motorista.php");
+        header("location:../funcionario.php");
         }
         //VInvular os parametros
         mysqli_stmt_bind_param($preparar,"si",$DisponivelUsuario,$UsuarioID);
@@ -34,17 +34,17 @@ if (isset($_GET['Disponivel']) && isset($_GET['id'])) {
         if (mysqli_stmt_execute($preparar)) {
             //mensagem de sucesso
             $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-            Situação do Motorista Actualizada com Sucesso.
+            Situação do Funcionário Actualizada com Sucesso.
             <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
-        header('location:../motorista.php');
+        header('location:../funcionario.php');
         }else {
             //mensagem de sucesso de erro
             $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-            Erro: Situação Não Actualizada.
+            Erro: Situação do Funcionário Não Actualizada.
             <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
-        header('../motorista.php');
+        header('../funcionario.php');
         }
    
 }
