@@ -1,5 +1,5 @@
 <?php
-$tituloPagina ="Veículos Cadastrados";
+$tituloPagina ="Clientes Cadastrados";
 // ======= Head ======= -->
 include_once 'head/head.php';
 
@@ -55,17 +55,18 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title"> Consultar Veículos</h5>
+                  <h5 class="card-title"> Consultar Lista de Clientes</h5>
                     
                   <table class="table table-bordered border-primary">
                     <thead>
                       <tr>
-                        <th scope="col">Imagem</th>
-                        <th scope="col">Modelo</th>
-                        <th scope="col">Ano</th>
-                        <th scope="col">Placa</th>
-                        <th scope="col">Disponivel</th>
-                        <th scope="col">Valor Diário</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Documento</th>
+                        <th scope="col">Nº BI/Passa Porte</th>
+                        <th scope="col">Nº Carta de Condução</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Telefone</th>
+                        <th scope="col">Situação</th>
                         <th scope="col">Acção</th>
                       </tr>
                     </thead>
@@ -73,48 +74,46 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                       //Pesquisar carro
                       if(!empty($_GET['pesquisar'])) {
                         $dados = $_GET['pesquisar'];
-                        $EstadoCarro ="Apagado";
-                        $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros WHERE estadoCarro != '$EstadoCarro' and Modelo like '%$dados%' ORDER BY Modelo LIMIT $inicio, $qnt_result_pg";
+                        $EstadoCliente="Apagado";
+                        $sql="SELECT cl.UsuarioID,ClienteID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco,NumDocumento,Documento,Email FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID WHERE EstadoCliente = '$EstadoCliente' and Nome like '%$dados%' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }else {
-                        $EstadoCarro ="Apagado";
-                        $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros WHERE estadoCarro != '$EstadoCarro' ORDER BY Modelo LIMIT $inicio, $qnt_result_pg";
+                        $EstadoCliente="Apagado";
+                        $sql="SELECT cl.UsuarioID,ClienteID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco,NumDocumento,Documento,Email FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID WHERE EstadoCliente != '$EstadoCliente' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }
                       $query = mysqli_query($conexao,$sql);
                       while ($dados=mysqli_fetch_array($query)) :
-                        $CarroID = $dados['CarroID'];  
-                        $Imagem = $dados['Imagem'];
-                        $Modelo = $dados['Modelo'];
-                        $Ano = $dados['Ano'];
-                        $Placa = $dados['Placa'];
-                        $Diponivel = $dados['Disponivel'];
-                        $ValorDiaria = $dados['ValorDiaria'];
-                        $Lugar = $dados['Lugar'];
-                        $Bagageira = $dados['Bagageira'];
-                        $Conforto = $dados['Conforto'];
-                        $Porta = $dados['Porta'];
-                        $MotorSeguranca = $dados['MotorSeguranca'];
+                        $Documento = $dados['Documento']; 
+                        $NumDocumento = $dados['NumDocumento']; 
+                        $ClienteID = $dados['ClienteID'];  
+                        $Nome = $dados['Nome'];
+                        $CartaConducao = $dados['CartaConducao'];
+                        $Telefone = $dados['Telefone'];
+                        $Estadousuario = $dados['EstadoUsuario'];
+                        $Endereco = $dados['Endereco'];
+                        $UsuarioID = $dados['UsuarioID'];
+                        $Email = $dados['Email'];
                     ?>
                     <tbody>
                       <tr>
-                        <th><img src="../imagens/carros/<?php echo $Imagem;?>" width="100" alt="<?php echo $Modelo;?>"></th>
-                        <td><?php echo $Modelo;?></td>
-                        <td><a href="#" class="text-primary"><?php echo $Ano;?></a></td>
-                        <td><span class="badge bg-success"><?php echo $Placa;?></span></td>
-                        <td><?php echo $Diponivel == 1 ? "<a class='btn btn-warning' disabled href='carro/disponivel.php?Disponivel=Sim&id=$CarroID'><i class='bi-undo'></i> Sim</a>":"<a class='btn btn-dark' href='carro/disponivel.php?Disponivel=Não&id=$CarroID'><i class='bi-undo'></i> Não</a>";?></td>
-                        <td><?php echo number_format($ValorDiaria,2,",",".");?></td>
+                        <td><?php echo $Nome;?></td>
+                        <td><?php echo $Documento;?></td>
+                        <td class="text-primary"><?php echo $NumDocumento;?></td>
+                        <td class="text-primary"><?php echo $CartaConducao;?></td>
+                        <td><?php echo $Email;?></td>
+                        <td><?php echo $Telefone;?></td>
+                        <td><?php echo $Estadousuario == 'Activo' ? "<a class='btn btn-warning' disabled href='cliente/disponivel.php?Disponivel=Activo&id=$UsuarioID'><i class='bi-undo'></i> $Estadousuario</a>":"<a class='btn btn-dark' href='cliente/disponivel.php?Disponivel=Inactivo&id=$UsuarioID'><i class='bi-undo'></i>$Estadousuario</a>";?></td>
                         <td> 
                           <div class="btn-group">
-                            <a class="btn btn-secondary" href="../imprimir/carro.php?id=<?php echo $CarroID;?>"><i   class="bi-eye"></i></a>
-                            <a class="btn btn-primary" href="edit_veiculo.php?id=<?php echo $CarroID;?>"><i class="ri-edit-line"></i></a>
-                            <a class="btn btn-danger" href="carro/deletar.php?id=<?php echo $CarroID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
+                            <a class="btn btn-secondary" href="../imprimir/cliente.php?id=<?php echo $ClienteID;?>"><i   class="bi-eye"></i></a>
+                            <a class="btn btn-primary" href="edit_cliente.php?id=<?php echo $ClienteID;?>"><i class="ri-edit-line"></i></a>
+                            <a class="btn btn-danger" href="cliente/deletar.php?id=<?php echo $ClienteID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
                           </div>
                         </td>
                       </tr>
                     </tbody>
                     <?php endwhile;
                       //Somar todos os registros 
-                      $EstadoCarro ="Apagado";
-                      $result_pg="SELECT Count(CarroID) as NumID FROM carros WHERE estadoCarro != '$EstadoCarro' ORDER BY Modelo";
+                      $result_pg="SELECT Count(ClienteID) as NumID FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID";
                       $resultado_pg = mysqli_query($conexao, $result_pg);
                       $row_pg = mysqli_fetch_assoc($resultado_pg);
                       //echo $row_pg['num_result'];
@@ -134,26 +133,26 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                             //Limitar os link antes depois
                             $max_links = 3; 
                           ?>
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=1'>Anterior</a>"?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='cliente.php?pagina=1'>Anterior</a>"?></li>
                           <?php 
                               for($pag_ant = $pagina - $max_links; $pag_ant <= $pagina - 1; $pag_ant++){
                               if($pag_ant >= 1){
                           ?>
 
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$pag_ant'>$pag_ant</a>"?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='cliente.php?pagina=$pag_ant'>$pag_ant</a>"?></li>
                           <?php	}
                           } ?>
 
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$pagina'> $pagina</a>";?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='cliente.php?pagina=$pagina'> $pagina</a>";?></li>
 
                           <?php 
                               for($pag_dep = $pagina + 1; $pag_dep <= $pagina + $max_links; $pag_dep++){
                               if($pag_dep <= $quantidade_pg){ 
                           ?>		
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$pag_dep'>$pag_dep</a>";?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='cliente.php?pagina=$pag_dep'>$pag_dep</a>";?></li>
                           <?php	}
                           } ?>
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$quantidade_pg'>Proximo</a>"?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='cliente.php?pagina=$quantidade_pg'>Proximo</a>"?></li>
                         </ul>
                       </nav> 
                   </div>
@@ -172,45 +171,54 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Cadastrar Veículo</h5>
+            <h5 class="modal-title">Cadastrar Cliente</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Dados do Veículo</h5>
+                <h5 class="card-title">Dados do Cliente</h5>
 
                 <!-- No Labels Form -->
-                <form class="row g-3" method="POST" action="carro/inserir.php" enctype="multipart/form-data">
+                <form class="row g-3" method="POST" action="cliente/inserir.php" enctype="multipart/form-data">
                   <div class="col-md-6">
-                    <input type="text" name="modelo" class="form-control" placeholder="Modelo" autocomplete="off" >
-                  </div>
-                  <div class="col-md-6">
-                    <input type="text" name="ano" class="form-control" placeholder="Ano" autocomplete="off" >
+                    <input type="text" name="nome" class="form-control" placeholder="Nome" autocomplete="off" required>
                   </div>
                   <div class="col-md-6">
-                    <input type="text" name="placa" class="form-control" placeholder="Placa" autocomplete="off" >
+                    <input type="text" name="telefone" class="form-control" placeholder="Telefone" autocomplete="off" required>
                   </div>
                   <div class="col-6">
-                    <input type="number" class="form-control" name="valorDiario" placeholder="Valor Diário" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="porta" placeholder="Portas" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="lugar" placeholder="Lugares" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="bagageira" placeholder="Bagageira" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="motorSeguranca" placeholder="Motor e Segurança" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="conforto" placeholder="Conforto" autocomplete="off">
+                    <input type="Email" class="form-control" name="email" placeholder="Email" autocomplete="off" required>
                   </div>
                   <div class="col-md-6">
-                    <input type="file" name="imagem" class="form-control" placeholder="Imagem">
+                    <input type="text" name="cartaConducao" class="form-control" placeholder="Nº Carta de Condução" autocomplete="off" required >
+                  </div>
+                  <div class="col-md-6">
+                    <textarea name="endereco" id="endereco" autocomplete="off" required class="form-control" cols="5" rows="3" placeholder="Endereço"></textarea>
+                  </div>
+                  <div class="col-md-6">
+                    <select name="documento" id="" class="form-control" required>
+                      <option value="">Selecionar Documento</option>
+                      <option value="B.I">Bilhete de Identidade</option>
+                      <option value="Passa Porte">Passa Porte</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                  <input type="text" name="numDocumento" class="form-control" placeholder="Nº Documento" autocomplete="off" required >
+                  </div>
+                  <div class="col-sm-10">
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="situacao" id="gridRadios1" value="Activo" checked="">
+                      <label class="form-check-label" for="gridRadios1">
+                        Conta Activa
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="situacao" id="gridRadios2" value="Inactivo">
+                      <label class="form-check-label" for="gridRadios2">
+                        Conta Inactiva
+                      </label>
+                    </div>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -236,7 +244,7 @@ if (event.Key === "Enter") {
 });
 
 function searchData(){
-    window.location = 'veiculo.php?pesquisar='+pesquisar.value;
+    window.location = 'motorista.php?pesquisar='+pesquisar.value;
 }
 <?php
 //-- ======= Footer ======= -->

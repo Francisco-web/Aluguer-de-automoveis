@@ -55,7 +55,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title"> Consultar Motorista</h5>
+                  <h5 class="card-title"> Consultar Lista de Motorista</h5>
                     
                   <table class="table table-bordered border-primary">
                     <thead>
