@@ -10,7 +10,7 @@
     </div><!-- End Logo -->
 
     <div class="search-bar">
-      <form class="search-form d-flex align-items-center" action="">
+      <form class="search-form d-flex align-items-center" method="GET" action="">
         <input type="text" name="pesquisar" autocomplete="off" placeholder="Search" id="pesquisar" title="Enter search keyword">
         <button type="submit" onclick="searchData()" title="Search"><i class="bi bi-search"></i></button>
       </form>

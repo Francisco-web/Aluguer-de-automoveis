@@ -63,19 +63,14 @@
               <i class="bi bi-circle"></i><span>Consultar</span>
             </a>
           </li>
-          <li>
-            <a href="candidatura.php">
-              <i class="bi bi-circle"></i><span>Candidaturas</span>
-            </a>
-          </li>
         </ul>
       </li><!-- End Icons Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
+        <a class="nav-link collapsed" data-bs-target="#icon-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-person"></i><span>Funcionário</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <ul id="icon-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
             <a href="funcionario.php">
               <i class="bi bi-circle"></i><span>Consultar</span>
@@ -83,22 +78,6 @@
           </li>
         </ul>
       </li><!-- End Icons Nav -->
-
-      <li class="nav-heading">Website</li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="galeria.php">
-          <i class="bi bi-card-image"></i>
-          <span>Galeria</span>
-        </a>
-      </li><!-- End Profile Page Nav -->
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="noticia.php">
-          <i class="bi bi-camera-reels"></i>
-          <span>Notícia</span>
-        </a>
-      </li><!-- End F.A.Q Page Nav -->
     </ul>
 
   </aside><!-- End Sidebar-->

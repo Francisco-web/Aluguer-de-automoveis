@@ -244,7 +244,7 @@ if (event.Key === "Enter") {
 });
 
 function searchData(){
-    window.location = 'motorista.php?pesquisar='+pesquisar.value;
+    window.location = 'cliente.php?pesquisar='+pesquisar.value;
 }
 <?php
 //-- ======= Footer ======= -->
