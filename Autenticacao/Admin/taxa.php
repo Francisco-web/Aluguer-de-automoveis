@@ -91,7 +91,6 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                         <td><?php echo $Descricao;?></td>
                         <td> 
                           <div class="btn-group">
-                            <a class="btn btn-secondary" href="../imprimir/carro.php?id=<?php echo $TaxaID;?>"><i   class="bi-eye"></i></a>
                             <a class="btn btn-primary" href="edit_veiculo.php?id=<?php echo $TaxaID;?>"><i class="ri-edit-line"></i></a>
                             <a class="btn btn-danger" href="carro/deletar.php?id=<?php echo $TaxaID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
                           </div>
