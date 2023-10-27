@@ -20,8 +20,8 @@
             </a>
           </li>
           <li>
-            <a href="reserva.php.php">
-              <i class="bi bi-circle"></i><span>Reserva</span>
+            <a href="taxa.php">
+              <i class="bi bi-circle"></i><span>Taxas</span>
             </a>
           </li>
         </ul>

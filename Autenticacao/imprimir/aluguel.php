@@ -30,13 +30,11 @@ class PDF extends FPDF
         $this->Cell(0,5,utf8_decode(''),0,1,'C');
         $conexao = mysqli_connect("localhost","root","","francycarros");  
         if (isset($_GET['id'])) {
-            $id = $_GET['id'];
+            $id = 17;
             
-        $estadoDesactivo = 7;
-        $sql="SELECT alu.AluguelID,Modelo,LocalRetirada,DataRetirada,LocalDevolucao,DataDevolucao,valorTotal,EstadoAluguel,cl.Nome as cliente,mt.Nome as motorista,cl.Nome,cl.Telefone,cl.Endereco,cl.NumDocumento,cl.Documento,cl.CartaConducao,fn.Nome as funcionario FROM alugueis alu inner join carros cr on alu.CarroID = cr.CarroID join clientes cl on alu.ClienteID = cl.ClienteID join motoristas mt on alu.MotoristaID = alu.MotoristaID join funcionarios fn on alu.FuncionarioID = fn.FuncionarioID where alu.AluguelID = '$id'";
+        $sql="SELECT alu.AluguelID,ValorDiaria,Lugar,Porta,cr.Imagem,Ano,Placa,Disponivel,Conforto,Bagageira,MotorSeguranca,Modelo,LocalRetirada,DataRetirada,LocalDevolucao,DataDevolucao,valorTotal,cl.Nome as cliente,mt.Nome as motorista FROM alugueis alu inner join carros cr on alu.CarroID = cr.CarroID join clientes cl on alu.ClienteID = cl.ClienteID join motoristas mt on alu.MotoristaID = mt.MotoristaID WHERE alu.AluguelID = '$id'";
         $query = mysqli_query($conexao,$sql);
-        $dados=mysqli_fetch_array($query);
-        $CarroID = $dados['CarroID'];  
+        $dados = mysqli_fetch_array($query);
         $Imagem = $dados['Imagem'];
         $Modelo = $dados['Modelo'];
         $Ano = $dados['Ano'];

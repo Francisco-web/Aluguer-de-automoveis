@@ -74,7 +74,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                       $sql="SELECT alu.AluguelID,Modelo,LocalRetirada,DataRetirada,LocalDevolucao,DataDevolucao,valorTotal,cl.Nome as cliente,mt.Nome as motorista FROM alugueis alu inner join carros cr on alu.CarroID = cr.CarroID join clientes cl on alu.ClienteID = cl.ClienteID join motoristas mt on alu.MotoristaID = alu.MotoristaID WHERE EstadoAluguel != '$EstadoFuncionario' and placa ='$dados' ORDER BY alu.AluguelID DESC LIMIT $inicio, $qnt_result_pg";
                     }else {
                       $EstadoFuncionario="Apagado";
-                      $sql="SELECT alu.AluguelID,Modelo,LocalRetirada,DataRetirada,LocalDevolucao,DataDevolucao,valorTotal,cl.Nome as cliente,mt.Nome as motorista FROM alugueis alu inner join carros cr on alu.CarroID = cr.CarroID join clientes cl on alu.ClienteID = cl.ClienteID join motoristas mt on alu.MotoristaID = alu.MotoristaID WHERE EstadoAluguel != '$EstadoFuncionario' ORDER BY alu.AluguelID DESC LIMIT $inicio, $qnt_result_pg";
+                      $sql="SELECT alu.AluguelID,Modelo,LocalRetirada,DataRetirada,LocalDevolucao,DataDevolucao,valorTotal,cl.Nome as cliente,mt.Nome as motorista FROM alugueis alu inner join carros cr on alu.CarroID = cr.CarroID join clientes cl on alu.ClienteID = cl.ClienteID join motoristas mt on alu.MotoristaID = mt.MotoristaID WHERE EstadoAluguel != '$EstadoFuncionario' ORDER BY alu.AluguelID DESC LIMIT $inicio, $qnt_result_pg";
                     }
                       $query = mysqli_query($conexao,$sql);
                       while ($dados=mysqli_fetch_array($query)) :
@@ -100,7 +100,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                         <td><?php echo $motorista;?></td>
                         <td> 
                           <div class="btn-group">
-                            <a class="btn btn-secondary" href="../imprimir/cliente.php?id=<?php echo $idAluguer;?>"><i   class="bi-eye"></i></a>
+                            <a class="btn btn-secondary" href="../imprimir/aluguel.php?id=<?php echo $idAluguer;?>"><i   class="bi-eye"></i></a>
                             <a class="btn btn-primary" href="edit_aluguer.php?id=<?php echo $idAluguer;?>"><i class="ri-edit-line"></i></a>
                             <a class="btn btn-danger" href="aluguel/deletar.php?id=<?php echo $idAluguer;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
                           </div>
