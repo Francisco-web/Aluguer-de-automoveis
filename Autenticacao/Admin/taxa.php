@@ -15,7 +15,7 @@ $pagina_atual = filter_input(INPUT_GET,'pagina', FILTER_SANITIZE_NUMBER_INT);
 $pagina = (!empty($pagina_atual)) ? $pagina_atual : 1;
 		
 //Setar a quantidade de itens por pagina
-$qnt_result_pg = 6;
+$qnt_result_pg = 9;
 //calcular o inicio visualização
 $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
 
@@ -73,7 +73,8 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                         $dados = $_GET['pesquisar'];
                         $sql="SELECT Nome,Descricao,Valor,EstadoTaxa FROM taxas WHERE Nome like '%$dados%' ORDER BY EstadoTaxa LIMIT $inicio, $qnt_result_pg";
                       }else {
-                        $sql="SELECT * FROM taxas ORDER BY EstadoTaxa LIMIT $inicio, $qnt_result_pg";
+                        $EstadoTaxa = 'Antigo';
+                        $sql="SELECT * FROM taxas WHERE EstadoTaxa != '$EstadoTaxa' ORDER BY EstadoTaxa Desc LIMIT $inicio, $qnt_result_pg";
                       }
                       $query = mysqli_query($conexao,$sql);
                       while ($dados=mysqli_fetch_array($query)) :
@@ -87,7 +88,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                       <tr>
                         <td><a href="#" class="text-primary"><?php echo $Taxa;?></a></td>
                         <td><span class="badge bg-success"><?php echo number_format($valorTaxa,2,",",".");?></span></td>
-                        <td><?php echo $EstadoTaxa == 'Actual' ? "<a class='btn btn-warning' disabled href='taxa/disponivel.php?Disponivel=Sim&id=$TaxaID'><i class='bi-undo'></i>Actual</a>":"<a class='btn btn-dark' href='taxa/disponivel.php?Disponivel=Não&id=$TaxaID'><i class='bi-undo'></i>Antigo</a>";?></td>
+                        <td><?php echo $EstadoTaxa == 'Actual' ? "<a class='btn btn-warning' disabled href='taxa/disponivel.php?Disponivel=Actual&id=$TaxaID'><i class='bi-undo'></i>Actual</a>":"<a class='btn btn-dark' href='taxa/disponivel.php?Disponivel=Antigo&id=$TaxaID'><i class='bi-undo'></i>Antigo</a>";?></td>
                         <td><?php echo $Descricao;?></td>
                         <td> 
                           <div class="btn-group">
@@ -100,7 +101,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                     <?php endwhile;
                       //Somar todos os registros 
                       $EstadoCarro ="Apagado";
-                      $result_pg="SELECT Count(CarroID) as NumID FROM carros WHERE estadoCarro != '$EstadoCarro' ORDER BY Modelo";
+                      $result_pg="SELECT Count(TaxaID) as NumID FROM taxas";
                       $resultado_pg = mysqli_query($conexao, $result_pg);
                       $row_pg = mysqli_fetch_assoc($resultado_pg);
                       //echo $row_pg['num_result'];
@@ -120,26 +121,26 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                             //Limitar os link antes depois
                             $max_links = 3; 
                           ?>
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=1'>Anterior</a>"?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='taxa.php?pagina=1'>Anterior</a>"?></li>
                           <?php 
                               for($pag_ant = $pagina - $max_links; $pag_ant <= $pagina - 1; $pag_ant++){
                               if($pag_ant >= 1){
                           ?>
 
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$pag_ant'>$pag_ant</a>"?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='taxa.php?pagina=$pag_ant'>$pag_ant</a>"?></li>
                           <?php	}
                           } ?>
 
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$pagina'> $pagina</a>";?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='taxa.php?pagina=$pagina'> $pagina</a>";?></li>
 
                           <?php 
                               for($pag_dep = $pagina + 1; $pag_dep <= $pagina + $max_links; $pag_dep++){
                               if($pag_dep <= $quantidade_pg){ 
                           ?>		
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$pag_dep'>$pag_dep</a>";?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='taxa.php?pagina=$pag_dep'>$pag_dep</a>";?></li>
                           <?php	}
                           } ?>
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='veiculo.php?pagina=$quantidade_pg'>Proximo</a>"?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='taxa.php?pagina=$quantidade_pg'>Proximo</a>"?></li>
                         </ul>
                       </nav> 
                   </div>
@@ -158,45 +159,24 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Cadastrar Veículo</h5>
+            <h5 class="modal-title">Registrar Taxa</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Dados do Veículo</h5>
+                <h5 class="card-title">Dados da Taxa</h5>
 
                 <!-- No Labels Form -->
-                <form class="row g-3" method="POST" action="carro/inserir.php" enctype="multipart/form-data">
+                <form class="row g-3" method="POST" action="taxa/inserir.php" enctype="multipart/form-data">
                   <div class="col-md-6">
-                    <input type="text" name="modelo" minlength="3" class="form-control" placeholder="Modelo" autocomplete="off" >
-                  </div>
-                  <div class="col-md-6">
-                    <input type="number" name="ano" class="form-control" minlength="" placeholder="Ano" autocomplete="off" >
+                    <input type="text" name="taxa" minlength="4" class="form-control" placeholder="Taxa" autocomplete="off" >
                   </div>
                   <div class="col-md-6">
-                    <input type="text" name="placa" minlength="11" class="form-control" placeholder="Placa" autocomplete="off" >
+                    <input type="number" name="valorTaxa" class="form-control" minlength="" placeholder="Valor" autocomplete="off" >
                   </div>
                   <div class="col-6">
-                    <input type="number" class="form-control" minlength="4" name="valorDiario" placeholder="Valor Diário" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="number" class="form-control" name="porta" placeholder="Portas" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="number" class="form-control" name="lugar" placeholder="Lugares" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="bagageira" placeholder="Bagageira" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="motorSeguranca" placeholder="Motor e Segurança" autocomplete="off" >
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="conforto" placeholder="Conforto" autocomplete="off">
-                  </div>
-                  <div class="col-md-6">
-                    <input type="file" name="imagem" class="form-control" placeholder="Imagem">
+                    <textarea name="descricao" id="" class="form-control" placeholder="Descrição" autocomplete="off"cols="30" rows="10"></textarea>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
