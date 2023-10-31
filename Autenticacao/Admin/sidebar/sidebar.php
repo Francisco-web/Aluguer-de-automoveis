@@ -78,6 +78,18 @@
           </li>
         </ul>
       </li><!-- End Icons Nav -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#relatorio-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-list"></i><span>Relatório</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="relatorio-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="relatorioAluguel.php">
+              <i class="bi bi-circle"></i><span>Aluguel</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Icons Nav -->
     </ul>
 
   </aside><!-- End Sidebar-->
