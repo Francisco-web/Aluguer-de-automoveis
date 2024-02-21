@@ -34,8 +34,8 @@
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">
             <li class="dropdown-header">
-              You have 4 new notifications
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+              Você tem 4 novas notificões
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">Ver Todas</span></a>
             </li>
             <li>
               <hr class="dropdown-divider">
@@ -109,8 +109,8 @@
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
             <li class="dropdown-header">
-              You have 3 new messages
-              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">View all</span></a>
+              Você tem 3 novas mensagens
+              <a href="#"><span class="badge rounded-pill bg-primary p-2 ms-2">Ver Todas</span></a>
             </li>
             <li>
               <hr class="dropdown-divider">
@@ -169,14 +169,14 @@
         <li class="nav-item dropdown pe-3">
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2">K. Anderson</span>
+            <img src="../assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo"$Nome_us"?></span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-              <h6>Kevin Anderson</h6>
-              <span>Web Designer</span>
+              <h6><?php echo"$Nome_us"?></h6>
+              <span><?php echo"$Permissao_us"?>-<?php echo"$Situacao_us"?></span>
             </li>
             <li>
               <hr class="dropdown-divider">
@@ -185,7 +185,7 @@
             <li>
               <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
                 <i class="bi bi-person"></i>
-                <span>My Profile</span>
+                <span>Meu Perfil</span>
               </a>
             </li>
             <li>
@@ -195,25 +195,14 @@
             <li>
               <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
                 <i class="bi bi-gear"></i>
-                <span>Account Settings</span>
+                <span>Definição de Conta</span>
               </a>
             </li>
             <li>
               <hr class="dropdown-divider">
             </li>
-
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="pages-faq.html">
-                <i class="bi bi-question-circle"></i>
-                <span>Need Help?</span>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="#">
+              <a class="dropdown-item d-flex align-items-center" href="../sair.php">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Sign Out</span>
               </a>
@@ -226,3 +215,8 @@
     </nav><!-- End Icons Navigation -->
 
   </header><!-- End Header -->
+  <?php
+  if ($Permissao_us != 'Administrador' || $Situacao_us !='Activo') {
+    header("location:../sair.php");
+  }
+  ?>

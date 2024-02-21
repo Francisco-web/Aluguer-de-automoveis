@@ -1,0 +1,23 @@
+Os requisitos não funcionais para um sistema de agendamento de aluguel de veículos podem incluir:
+
+1. **Desempenho**: O sistema deve ser capaz de lidar com um grande número de solicitações de agendamento simultaneamente sem degradação significativa do desempenho.
+
+2. **Segurança**: Deve garantir a segurança dos dados dos usuários, incluindo informações pessoais, detalhes de pagamento e histórico de transações.
+
+3. **Disponibilidade**: O sistema deve estar disponível 24/7, com tempo de inatividade mínimo para manutenção planejada ou atualizações.
+
+4. **Confiabilidade**: Deve ser confiável o suficiente para garantir que os agendamentos sejam registrados corretamente e que as transações sejam processadas de maneira confiável.
+
+5. **Escalabilidade**: Deve ser capaz de escalar horizontalmente para lidar com picos de carga de trabalho e aumentar a capacidade conforme necessário.
+
+6. **Facilidade de uso**: Deve ser intuitivo e fácil de usar para os usuários, tanto para agendar um veículo quanto para gerenciar reservas existentes.
+
+7. **Compatibilidade**: Deve ser compatível com uma variedade de dispositivos e plataformas, incluindo desktops, laptops, tablets e smartphones, e ser responsivo em diferentes tamanhos de tela.
+
+8. **Localização e internacionalização**: Deve suportar diferentes idiomas, moedas e fusos horários para atender a uma base de usuários global.
+
+9. **Rastreamento e relatórios**: Deve ser capaz de rastrear reservas, gerar relatórios e fornecer insights sobre o uso do sistema e o desempenho do serviço.
+
+10. **Manutenção e suporte**: Deve ser fácil de manter e atualizar, e fornecer suporte técnico eficaz para resolver problemas e responder a consultas dos usuários.
+
+Esses requisitos não funcionais são fundamentais para garantir que o sistema de agendamento de aluguel de veículos seja eficiente, seguro e confiável para os usuários.

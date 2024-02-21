@@ -1,5 +1,5 @@
 <?php
-$tituloPagina ="Funcionários Cadastrados";
+$tituloPagina ="Usuários Cadastrados";
 // ======= Head ======= -->
 include_once 'head/head.php';
 
@@ -35,9 +35,9 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
     </div><!-- End Page Title -->
     <?php
     //SESSAO para mostrar mesagem
-    if (isset($_SESSION['msg_func'])) {
-        echo $_SESSION['msg_func'];
-        unset($_SESSION['msg_func']);
+    if (isset($_SESSION['msg_usuario'])) {
+        echo $_SESSION['msg_usuario'];
+        unset($_SESSION['msg_usuario']);
     }
     ?>
     <section class="section dashboard">
@@ -60,6 +60,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                   <table class="table table-bordered border-primary">
                     <thead>
                       <tr>
+                        <th scope="col">ID</th>
                         <th scope="col">Nome</th>
                         <th scope="col">Email</th>
                         <th scope="col">Permissão</th>
@@ -79,7 +80,6 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                       $prepare_func->execute();
                       $result_func=$prepare_func->fetchAll(PDO::FETCH_ASSOC);
                       foreach($result_func as $dados){
-                        $FuncionarioID = $dados['UsuarioID'];  
                         $Nome = $dados['Nome'];
                         $SituacaoUsuario = $dados['Situacao'];
                         $UsuarioID = $dados['UsuarioID'];
@@ -88,14 +88,15 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                     ?>
                     <tbody>
                       <tr>
+                        <td><?php echo $UsuarioID;?></td>
                         <td><?php echo $Nome;?></td>
                         <td><?php echo $Email;?></td>
                         <td><?php echo $Permissao;?></td>
-                        <td><?php echo $SituacaoUsuario == 'Activo' ? "<a class='btn btn-warning' href='funcionario/disponivel.php?Disponivel=Activo&id=$UsuarioID'><i class='bi-undo'></i> $SituacaoUsuario</a>":"<a class='btn btn-dark' href='funcionario/disponivel.php?Disponivel=Inactivo&id=$UsuarioID'><i class='bi-undo'></i>$SituacaoUsuario</a>";?></td>
+                        <td><?php echo $SituacaoUsuario == 'Activo' ? "<a class='btn btn-warning' href='usuario/disponivel.php?Disponivel=Activo&id=$UsuarioID'><i class='bi-undo'></i> $SituacaoUsuario</a>":"<a class='btn btn-dark' href='usuario/disponivel.php?Disponivel=Inactivo&id=$UsuarioID'><i class='bi-undo'></i>$SituacaoUsuario</a>";?></td>
                         <td> 
                           <div class="btn-group">
-                            <a class="btn btn-primary" href="edit_Funcionario.php?id=<?php echo $FuncionarioID;?>"><i class="ri-edit-line"></i></a>
-                            <a class="btn btn-danger" href="funcionario/deletar.php?id=<?php echo $FuncionarioID;?>&Usuario=<?php echo $UsuarioID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
+                            <a class="btn btn-primary" href="edit_usuario.php?id=<?php echo $UsuarioID;?>"><i class="ri-edit-line"></i></a>
+                            <a class="btn btn-danger" href="usuario/deletar.php?id=<?php echo $UsuarioID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
                           </div>
                         </td>
                       </tr>
@@ -123,26 +124,26 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                             //Limitar os link antes depois
                             $max_links = 3; 
                           ?>
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='cliente.php?pagina=1'>Anterior</a>"?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='usuario.php?pagina=1'>Anterior</a>"?></li>
                           <?php 
                               for($pag_ant = $pagina - $max_links; $pag_ant <= $pagina - 1; $pag_ant++){
                               if($pag_ant >= 1){
                           ?>
 
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='cliente.php?pagina=$pag_ant'>$pag_ant</a>"?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='usuario.php?pagina=$pag_ant'>$pag_ant</a>"?></li>
                           <?php	}
                           } ?>
 
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='cliente.php?pagina=$pagina'> $pagina</a>";?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='usuario.php?pagina=$pagina'> $pagina</a>";?></li>
 
                           <?php 
                               for($pag_dep = $pagina + 1; $pag_dep <= $pagina + $max_links; $pag_dep++){
                               if($pag_dep <= $quantidade_pg){ 
                           ?>		
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='cliente.php?pagina=$pag_dep'>$pag_dep</a>";?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='usuario.php?pagina=$pag_dep'>$pag_dep</a>";?></li>
                           <?php	}
                           } ?>
-                          <li class="page-item"><?PHP echo "<a class='page-link' href='cliente.php?pagina=$quantidade_pg'>Proximo</a>"?></li>
+                          <li class="page-item"><?PHP echo "<a class='page-link' href='usuario.php?pagina=$quantidade_pg'>Proximo</a>"?></li>
                         </ul>
                       </nav> 
                   </div>
@@ -161,7 +162,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Cadastrar Funcionário</h5>
+            <h5 class="modal-title">Cadastrar Usuário</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -169,27 +170,12 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
               <div class="card-body">
 
                 <!-- No Labels Form -->
-                <form class="row g-3" method="POST" action="funcionario/inserir.php" enctype="multipart/form-data">
+                <form class="row g-3" method="POST" action="usuario/inserir.php" enctype="multipart/form-data">
                   <div class="col-md-6">
-                    <input type="text" name="nome" class="form-control" placeholder="Nome" autocomplete="off" required>
-                  </div>
-                  <div class="col-md-6">
-                    <input type="text" name="sobreNome" class="form-control" placeholder="Sobre Nome" autocomplete="off" required>
+                    <input type="text" name="usuarioId" class="form-control" placeholder="ID" autocomplete="off" required>
                   </div>
                   <div class="col-6">
                     <input type="Email" class="form-control" name="email" placeholder="Email" autocomplete="off" required>
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="provincia" placeholder="Província" autocomplete="off" min-length="6" required>
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="municipio" placeholder="Município" autocomplete="off" min-length="6" required>
-                  </div>
-                  <div class="col-6">
-                    <input type="text" class="form-control" name="bairro" placeholder="Bairro" autocomplete="off" min-length="6" required>
-                  </div>
-                  <div class="col-6">
-                    <input type="number" class="form-control" name="telefone" placeholder="Telefone" autocomplete="off" min-length="6" required>
                   </div>
                   <div class="col-md-6">
                     <select name="permissao" id="" class="form-control" required>

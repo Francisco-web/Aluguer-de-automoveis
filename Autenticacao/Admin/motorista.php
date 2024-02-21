@@ -35,9 +35,9 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
     </div><!-- End Page Title -->
     <?php
     //SESSAO para mostrar mesagem
-    if (isset($_SESSION['msg'])) {
-        echo $_SESSION['msg'];
-        unset($_SESSION['msg']);
+    if (isset($_SESSION['msg_motorista'])) {
+        echo $_SESSION['msg_motorista'];
+        unset($_SESSION['msg_motorista']);
     }
     ?>
     <section class="section dashboard">
@@ -50,12 +50,11 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
             <div class="col-12">
               <div class="card recent-sales overflow-auto">
 
-                <div class="filter">
+                <div class="card-title">
                   <a class="btn btn btn-primary" data-bs-toggle="modal" data-bs-target="#largeModal" href="#" ><i class="bi bi-plus"></i>Novo</a>
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title"> Consultar Lista de Motoristas</h5>
                     
                   <table class="table table-bordered border-primary">
                     <thead>
@@ -80,8 +79,10 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                         $EstadoMotorista="Activo";
                         $sql="SELECT Imagem,MotoristaID,Email,Nome,CartaConducao,Email,EstadoUsuario,Telefone,Endereco,m.UsuarioID FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoMotorista ='$EstadoMotorista' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }
-                      $query = mysqli_query($conexao,$sql);
-                      while ($dados=mysqli_fetch_array($query)) :
+                      $prepare_mot = $conexao->prepare($sql);
+                      $prepare_mot->execute();
+                      $resultado= $prepare_mot->fetchAll(PDO::FETCH_ASSOC);
+                      foreach ($resultado as $dados) {
                         $Imagem = $dados['Imagem']; 
                         $MotoristaID = $dados['MotoristaID'];  
                         $Nome = $dados['Nome'];
@@ -110,12 +111,13 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                         </td>
                       </tr>
                     </tbody>
-                    <?php endwhile;
+                    <?php };
                       //Somar todos os registros 
                       $EstadoMotorista ="Apagado";
                       $result_pg="SELECT Count(MotoristaID) as NumID FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoMotorista !='$EstadoMotorista'";
-                      $resultado_pg = mysqli_query($conexao, $result_pg);
-                      $row_pg = mysqli_fetch_assoc($resultado_pg);
+                      $resultado_pg=$conexao->prepare($result_pg);
+                      $exec_pg = $resultado_pg->execute();
+                      $row_pg = $resultado_pg->fetch();
                       //echo $row_pg['num_result'];
                       //Quantidade de pagina 
                       $quantidade_pg = ceil($row_pg['NumID'] / $qnt_result_pg);

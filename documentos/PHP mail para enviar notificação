@@ -1,0 +1,66 @@
+Vamos criar um sistema de notificação simples em PHP que envia e-mails para confirmar reservas. Para isso, usaremos a biblioteca PHPMailer para enviar e-mails. Certifique-se de ter o PHPMailer configurado em seu projeto.
+
+Passos para criar o sistema de notificação por e-mail:
+
+1. **Configuração do PHPMailer**: Baixe a biblioteca PHPMailer e inclua os arquivos necessários em seu projeto. Você pode fazer o download em https://github.com/PHPMailer/PHPMailer.
+
+2. **Criar um formulário de reserva**: Crie um formulário em HTML onde os usuários podem inserir suas informações de reserva, como nome, e-mail, data de reserva, etc.
+
+3. **Processamento do formulário e envio de e-mail**: Crie um script PHP que processe o formulário e envie um e-mail de confirmação para o usuário.
+
+Aqui está um exemplo básico de como o script PHP pode ser implementado:
+
+```php
+<?php
+// Incluir a biblioteca PHPMailer
+require 'caminho_para_o_phpmailer/PHPMailer.php';
+require 'caminho_para_o_phpmailer/SMTP.php';
+require 'caminho_para_o_phpmailer/Exception.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+// Verifica se o formulário foi enviado
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Captura os dados do formulário
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
+    $data_reserva = $_POST['data_reserva'];
+    // Outras informações da reserva...
+
+    // Configuração do servidor de e-mail
+    $mail = new PHPMailer(true);
+
+    try {
+        // Configurações do servidor SMTP
+        $mail->isSMTP();
+        $mail->Host = 'smtp.seudominio.com';  // Substitua pelo seu servidor SMTP
+        $mail->SMTPAuth = true;
+        $mail->Username = 'seu_email@seudominio.com'; // Substitua pelo seu e-mail
+        $mail->Password = 'sua_senha'; // Substitua pela sua senha
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        // Remetente e destinatário
+        $mail->setFrom('seu_email@seudominio.com', 'Seu Nome');
+        $mail->addAddress($email, $nome);
+
+        // Conteúdo do e-mail
+        $mail->isHTML(true);
+        $mail->Subject = 'Confirmação de reserva';
+        $mail->Body    = 'Olá ' . $nome . ', <br><br> Sua reserva para o dia ' . $data_reserva . ' foi confirmada com sucesso.';
+
+        // Envia o e-mail
+        $mail->send();
+        echo 'E-mail de confirmação enviado com sucesso!';
+    } catch (Exception $e) {
+        echo 'Erro ao enviar o e-mail: ', $mail->ErrorInfo;
+    }
+}
+?>
+```
+
+No exemplo acima, substitua 'smtp.seudominio.com', 'seu_email@seudominio.com', 'sua_senha' pelos detalhes do seu servidor de e-mail. Certifique-se de que você tenha as configurações corretas do servidor SMTP.
+
+Esse é um exemplo básico para enviar e-mails de confirmação de reserva. Você pode expandir esse sistema para enviar outros tipos de notificações, como lembretes de devolução ou atualizações de status, adicionando mais lógica ao script conforme necessário. Certifique-se sempre de seguir as melhores práticas de segurança ao lidar com senhas e informações confidenciais.

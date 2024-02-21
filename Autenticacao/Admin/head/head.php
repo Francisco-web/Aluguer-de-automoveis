@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-  <title>Admin - FrancyCarros</title>
+  <title>Página Inicial - FrancyCarros</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
 
@@ -30,7 +30,27 @@
   <link href="../assets/css/style.css" rel="stylesheet">
 </head>
 <?php
-include_once '../config_db.php';
-session_start();
+include_once '../credencias/config_db.php';
+if (!isset($_SESSION)) session_start();// A sessão precisa ser iniciada em cada página diferente
 ob_start();
+//Verificar sessão
+if (!isset($_SESSION['UsuarioID']) AND ($_SESSION['Permissao']!='Administrador')) {
+  header("location:../sair.php");
+}
+$UsuarioID = $_SESSION['UsuarioID'];
+//Dados do Admin
+$sql= "SELECT Nome,Permissao,Situacao,Senha,Email,Endereco FROM usuarios WHERE UsuarioID =:usuarioID";
+$prepare_us= $conexao->prepare($sql);
+$prepare_us->bindParam(':usuarioID',$UsuarioID,PDO::PARAM_STR);
+$prepare_us->execute();
+$resultado=$prepare_us->fetchAll(PDO::FETCH_ASSOC);
+foreach($resultado as $dados){
+  $Nome_us= $dados['Nome'];
+  $Email_us= $dados['Email'];
+  $Senha_us=$dados['Senha'];
+  $Telefone_us= $dados['Telefone'];
+  $Permissao_us= $dados['Permissao'];
+  $Endereco_us=$dados['Endereco'];
+  $Situacao_us=$dados['Situacao'];
+}
 ?>

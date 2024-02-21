@@ -79,6 +79,18 @@
         </ul>
       </li><!-- End Icons Nav -->
       <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#icon-nav-usuario" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-person"></i><span>Usuário</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="icon-nav-usuario" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="usuario.php">
+              <i class="bi bi-circle"></i><span>Consultar</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Icons Nav -->
+      <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#relatorio-nav" data-bs-toggle="collapse" href="#">
           <i class="bi bi-list"></i><span>Relatório</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>

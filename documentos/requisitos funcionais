@@ -1,0 +1,23 @@
+Os requisitos funcionais para um sistema de agendamento de aluguel de veículos podem incluir:
+
+1. **Cadastro de usuários**: Permitir que os usuários se cadastrem no sistema fornecendo informações pessoais, de contato e métodos de pagamento.
+
+2. **Pesquisa de veículos**: Permitir que os usuários pesquisem veículos disponíveis com base em critérios como localização, data e hora de retirada e devolução, tipo de veículo e capacidade.
+
+3. **Reserva de veículos**: Permitir que os usuários reservem um veículo específico para uma data e hora específicas, fornecendo detalhes como nome do usuário, tipo de veículo, data de retirada e devolução.
+
+4. **Gerenciamento de reservas**: Permitir que os usuários visualizem, modifiquem e cancelem suas reservas existentes, sujeitas a políticas de cancelamento e disponibilidade de veículos.
+
+5. **Sistema de notificação**: Enviar notificações por e-mail ou mensagem de texto para confirmar reservas, lembrar os usuários de devoluções pendentes e fornecer atualizações sobre o status das reservas.
+
+6. **Integração de pagamento**: Integrar um sistema de pagamento seguro para processar transações de aluguel de veículos, incluindo depósitos e taxas adicionais.
+
+7. **Geração de faturas e recibos**: Gerar faturas detalhadas e recibos para cada transação de aluguel de veículo, incluindo informações sobre o custo total, datas de aluguel, taxas adicionais e métodos de pagamento.
+
+8. **Sistema de avaliação e feedback**: Permitir que os usuários avaliem a experiência de aluguel e forneçam feedback sobre o veículo, o processo de reserva e o atendimento ao cliente.
+
+9. **Gestão de frota**: Permitir que os administradores do sistema gerenciem a frota de veículos, incluindo adição, remoção, manutenção e atualização de informações de veículos, como disponibilidade, status e localização.
+
+10. **Relatórios e análises**: Gerar relatórios e análises sobre o desempenho do sistema, utilização da frota, padrões de reserva e feedback do cliente para ajudar na tomada de decisões e melhorias contínuas.
+
+Esses requisitos funcionais são essenciais para garantir que o sistema de agendamento de aluguel de veículos atenda às necessidades dos usuários e forneça uma experiência de aluguel eficiente e conveniente.

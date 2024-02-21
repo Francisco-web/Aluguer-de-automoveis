@@ -1,5 +1,5 @@
 <?php
-$pagina = "Página Admin";
+$pagina = "Página do Administrador";
 // ======= Head ======= -->
 include_once 'head/head.php';
 
