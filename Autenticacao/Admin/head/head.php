@@ -39,7 +39,7 @@ if (!isset($_SESSION['UsuarioID']) AND ($_SESSION['Permissao']!='Administrador')
 }
 $UsuarioID = $_SESSION['UsuarioID'];
 //Dados do Admin
-$sql= "SELECT Nome,Permissao,Situacao,Senha,Email,Endereco FROM usuarios WHERE UsuarioID =:usuarioID";
+$sql= "SELECT Nome,Permissao,Situacao,Senha,Email,Provincia,Municipio,Bairro FROM usuarios WHERE UsuarioID =:usuarioID";
 $prepare_us= $conexao->prepare($sql);
 $prepare_us->bindParam(':usuarioID',$UsuarioID,PDO::PARAM_STR);
 $prepare_us->execute();
@@ -50,7 +50,9 @@ foreach($resultado as $dados){
   $Senha_us=$dados['Senha'];
   $Telefone_us= $dados['Telefone'];
   $Permissao_us= $dados['Permissao'];
-  $Endereco_us=$dados['Endereco'];
+  $Provincia_us=$dados['Provincia'];
+  $Municipio_us=$dados['Municipio'];
+  $Bairro_us=$dados['Bairro'];
   $Situacao_us=$dados['Situacao'];
 }
 ?>

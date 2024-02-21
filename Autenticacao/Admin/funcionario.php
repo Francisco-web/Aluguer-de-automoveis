@@ -60,7 +60,14 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                   <table class="table table-bordered border-primary">
                     <thead>
                       <tr>
+                        <th scope="col">ID</th>
                         <th scope="col">Nome</th>
+                        <th scope="col">BI/PassPort</th>
+                        <th scope="col">Doc.Nº</th>
+                        <th scope="col">Provincia</th>
+                        <th scope="col">Município</th>
+                        <th scope="col">Bairro</th>
+                        <th scope="col">Telefone</th>
                         <th scope="col">Email</th>
                         <th scope="col">Permissão</th>
                         <th scope="col">Situação</th>
@@ -71,31 +78,46 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                       //Pesquisar carro
                       if(!empty($_GET['pesquisar'])) {
                         $dados = $_GET['pesquisar'];
-                        $sql="SELECT UsuarioID,Permissao,SituacaoUsuario,Nome,Email FROM usuarios WHERE Nome like '%$dados%' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
+                        $sql="SELECT us.UsuarioID,Telefone,Situacao,Nome,Email,Provincia,Municipio,Bairro,Permissao,dm.Documento,dm.FileDoc,dm.NumDocumento,dm.dataValidade,dm.SituacaoDoc FROM usuarios us inner join documentos dm on us.DocumentoID=dm.DocumentoID WHERE Nome like '%$dados%' OR NumDocumento like '%$dados%' OR UsuarioID like '%$dados%' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }else {
-                        $sql="SELECT UsuarioID,Situacao,Permissao,Nome,Email FROM usuarios ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
+                        $sql="SELECT us.UsuarioID,Telefone,Situacao,Nome,Email,Provincia,Municipio,Bairro,Permissao,dm.Documento,dm.FileDoc,dm.NumDocumento,dm.dataValidade,dm.SituacaoDoc FROM usuarios us inner join documentos dm on us.DocumentoID=dm.DocumentoID ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }
                       $prepare_func = $conexao->prepare($sql);
                       $prepare_func->execute();
                       $result_func=$prepare_func->fetchAll(PDO::FETCH_ASSOC);
                       foreach($result_func as $dados){
-                        $FuncionarioID = $dados['UsuarioID'];  
+                        $Telefone = $dados['Telefone'];  
                         $Nome = $dados['Nome'];
-                        $SituacaoUsuario = $dados['Situacao'];
+                        $Situacao = $dados['Situacao'];
                         $UsuarioID = $dados['UsuarioID'];
                         $Email = $dados['Email'];
                         $Permissao = $dados['Permissao'];
+                        $SituacaDoc = $dados['SituacaoDoc'];  
+                        $Provincia = $dados['Provincia'];
+                        $Municipio = $dados['Municipio'];
+                        $Bairro = $dados['Bairro'];
+                        $Documento = $dados['Documento'];
+                        $FileDoc = $dados['FileDoc'];
+                        $Email = $dados['Email'];
+                        $NumDocumento = $dados['NumDocumento'];
                     ?>
                     <tbody>
                       <tr>
+                        <td><?php echo $UsuarioID;?></td>
                         <td><?php echo $Nome;?></td>
+                        <td><?php echo $Documento;?></td>
+                        <td><?php echo $NumDocumento;?></td>
+                        <td><?php echo $Provincia;?></td>
+                        <td><?php echo $Municipio;?></td>
+                        <td><?php echo $Bairro;?></td>
+                        <td><?php echo $Telefone;?></td>
                         <td><?php echo $Email;?></td>
                         <td><?php echo $Permissao;?></td>
-                        <td><?php echo $SituacaoUsuario == 'Activo' ? "<a class='btn btn-warning' href='funcionario/disponivel.php?Disponivel=Activo&id=$UsuarioID'><i class='bi-undo'></i> $SituacaoUsuario</a>":"<a class='btn btn-dark' href='funcionario/disponivel.php?Disponivel=Inactivo&id=$UsuarioID'><i class='bi-undo'></i>$SituacaoUsuario</a>";?></td>
+                        <td><?php echo $Situacao == 'Activo' ? "<a class='btn btn-warning' href='funcionario/disponivel.php?Disponivel=Activo&id=$UsuarioID'><i class='bi-undo'></i> $Situacao</a>":"<a class='btn btn-dark' href='funcionario/disponivel.php?Disponivel=Inactivo&id=$UsuarioID'><i class='bi-undo'></i>$Situacao</a>";?></td>
                         <td> 
                           <div class="btn-group">
-                            <a class="btn btn-primary" href="edit_Funcionario.php?id=<?php echo $FuncionarioID;?>"><i class="ri-edit-line"></i></a>
-                            <a class="btn btn-danger" href="funcionario/deletar.php?id=<?php echo $FuncionarioID;?>&Usuario=<?php echo $UsuarioID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
+                            <a class="btn btn-primary" href="edit_Funcionario.php?id=<?php echo $UsuarioID;?>"><i class="ri-edit-line"></i></a>
+                            <a class="btn btn-danger" href="funcionario/deletar.php?id=<?php echo $UsuarioID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
                           </div>
                         </td>
                       </tr>
@@ -167,46 +189,42 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
           <div class="modal-body">
             <div class="card">
               <div class="card-body">
-
+              
                 <!-- No Labels Form -->
                 <form class="row g-3" method="POST" action="funcionario/inserir.php" enctype="multipart/form-data">
                   <div class="col-md-6">
                     <input type="text" name="nome" class="form-control" placeholder="Nome" autocomplete="off" required>
                   </div>
                   <div class="col-md-6">
-                    <input type="text" name="sobreNome" class="form-control" placeholder="Sobre Nome" autocomplete="off" required>
+                    <input type="text" name="sobreNome" class="form-control" placeholder="Sobrenome" autocomplete="off" required>
                   </div>
                   <div class="col-6">
-                    <input type="Email" class="form-control" name="email" placeholder="Email" autocomplete="off" required>
+                    <input type="text" class="form-control" name="provincia" placeholder="Província" autocomplete="off">
                   </div>
                   <div class="col-6">
-                    <input type="text" class="form-control" name="provincia" placeholder="Província" autocomplete="off" min-length="6" required>
+                    <input type="text" class="form-control" name="municipio" placeholder="Município" autocomplete="off">
                   </div>
                   <div class="col-6">
-                    <input type="text" class="form-control" name="municipio" placeholder="Município" autocomplete="off" min-length="6" required>
+                    <input type="text" class="form-control" name="bairro" placeholder="Bairro" autocomplete="off">
                   </div>
                   <div class="col-6">
-                    <input type="text" class="form-control" name="bairro" placeholder="Bairro" autocomplete="off" min-length="6" required>
-                  </div>
-                  <div class="col-6">
-                    <input type="number" class="form-control" name="telefone" placeholder="Telefone" autocomplete="off" min-length="6" required>
+                    <input type="number" class="form-control" name="telefone" placeholder="Telefone" autocomplete="off" minlength="12">
                   </div>
                   <div class="col-md-6">
-                    <select name="permissao" id="" class="form-control" required>
-                      <option value="">Permissão</option>
-                      <option value="Administrador">Administrador</option>
-                      <option value="Recepcionista">Recepcionista</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <select name="situacao" id="" class="form-control" required>
-                      <option value="">Situação</option>
-                      <option value="Activo">Activo</option>
-                      <option value="Inactivo">Inactivo</option>
+                    <select name="documento" id="" class="form-control" required>
+                      <option value="">Documento</option>
+                      <option value="B.I">B.I</option>
+                      <option value="Passa-Porte">Passa-Porte</option>
                     </select>
                   </div>
                   <div class="col-6">
-                    <input type="password" class="form-control" name="senha" placeholder="Senha" autocomplete="off" min-length="6" required>
+                    <input type="text" class="form-control" name="numDoc" placeholder="Doc. Nº" autocomplete="off" minlength="6" required>
+                  </div>
+                  <div class="col-6">
+                    <input type="date" class="form-control" name="dataValidade" placeholder="Doc. Nº" autocomplete="off" required>
+                  </div>
+                  <div class="col-6">
+                    <input type="file" class="form-control" name="fileDoc" placeholder="" autocomplete="off" minlength="6" >
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

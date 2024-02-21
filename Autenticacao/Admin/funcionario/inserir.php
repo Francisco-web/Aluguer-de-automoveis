@@ -12,11 +12,11 @@ if (isset($_POST['add'])) {
   $municipio =  strip_tags($_POST['municipio']);
   $bairro =  strip_tags($_POST['bairro']);
   $telefone =  strip_tags($_POST['telefone']);
-  $email =  strip_tags($_POST['email']);
-  $senha =  strip_tags($_POST['senha']);
-  $senha = password_hash($senha,PASSWORD_DEFAULT);
-  $situacao = strip_tags($_POST['situacao']);
-
+  //Dados do Documento
+  $Documento =  strip_tags($_POST['documento']);
+  $NumDoc=  strip_tags($_POST['numDoc']);
+  $DataValidade =  $_POST['dataValidade'];
+  $FileDoc =  'dcfsdc';
     if(empty($Nome)){
       $_SESSION['msg_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
         Digite o Nome!
@@ -29,44 +29,44 @@ if (isset($_POST['add'])) {
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../funcionario.php");
-    }elseif(empty($email)){
+    }elseif(empty($Documento)){
         $_SESSION['msg_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Digite o Endereço de Email!
+            Seleciona o Documento!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../funcionario.php");
-    }elseif(empty($senha)){
+    }elseif(empty($NumDoc)){
         $_SESSION['msg_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Insira a Senha!
+            Insira o Número do Documento.
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../funcionario.php");
-    }elseif(empty($situacao)){
+    }elseif(empty($DataValidade)){
         $_SESSION['msg_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Seleciona a Situação do Usuário!
+            Insira a Data de validade!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../funcionario.php");
     }else{
         //verificar se existe um veiculo com este nome
-        $sql="SELECT email FROM usuarios";
+        $sql="SELECT dm.NumDocumento FROM usuarios us inner join documentos dm on us.DocumentoID=dm.DocumentoID";
         $prepare_con = $conexao->prepare($sql);
         $prepare_con->execute();
         $result = $prepare_con->fetchAll(PDO::FETCH_ASSOC);
         foreach ($result as $dados) {
-            $EmailAnterior = $dados['email'];
+            $numDoc_db = $dados['NumDocumento'];
         }
         
-        if($Email == "$EmailAnterior"){
+        if($NumDoc == "$numDoc_db"){
             $_SESSION['msg_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-            Este Email Já existe!
+            Este Usuário Já existe!
             <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
             </div>";
             header("location:../funcionario.php");
         }else{
-             
-            //Consulta para inserir marcacao de Aluguer
-            $sql ="INSERT INTO `usuarios` (`Email`,`Senha`, `Permissao`, `EstadoUsuario`) VALUES (:email,:senha,:permissao,:situacao)";
+
+            //Consulta para inserir Usuario
+            $sql ="INSERT INTO `documentos` (`DocumentoID`, `Documento`, `FileDoc`, `NumDocumento`, `dataValidade`, `SituacaoDoc`) VALUES (NULL, '', NULL, '', '', NULL)";
             //Preparar a consulta
             $preparar = $conexao->prepare($sql);
             if ($preparar==false) {
@@ -77,10 +77,47 @@ if (isset($_POST['add'])) {
                 header("location:../motorista.php");
             }
             //vincular os parametros
-            $preparar->bindParam(":email",$email,PDO::PARAM_STR);
-            $preparar->bindParam(":senha",$senha, PDO::PARAM_STR);
-            $preparar->bindParam(":permissao",$Permissao,PDO::PARAM_STR);
-            $preparar->bindParam(":situacao",$situacao, PDO::PARAM_STR);
+            $preparar->bindParam(":documento",$Documento,PDO::PARAM_STR);
+            $preparar->bindParam(":numDocumento",$NumDoc, PDO::PARAM_STR);
+            $preparar->bindParam(":dataValidade",$DataValidade, PDO::PARAM_STR);
+            $preparar->bindParam(":fileDoc",$NumDoc, PDO::PARAM_STR);
+            $preparar->bindParam(":dataValidade",$DataValidade, PDO::PARAM_STR);
+
+            //Executar a consulta
+            if ($preparar->execute()) {
+                $_SESSION['msg_func']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
+                    Documento Cadastrado com Sucesso.
+                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                </div>";
+                header("location:../funcionario.php");
+            }else {
+                $_SESSION['msg']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                    Erro ao Cadastrar Documento!
+                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                </div>";
+                header("location:../funcionario.php");
+            }
+
+            $DocumentoID = $conexao->lastInsertId();
+            //Consulta para inserir Usuario
+            $sql ="INSERT INTO `usuarios` (`Nome`, `Telefone`, `Provincia`, `Municipio`, `Bairro`, `DocumentoID`) VALUES (':nome :sobrenome', ':telefone', ':provincia', ':municipio', ':bairro', ':documentoID')";
+            //Preparar a consulta
+            $preparar = $conexao->prepare($sql);
+            if ($preparar==false) {
+                $_SESSION['msg_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+                Erro na Preparação da Consulta!
+                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                </div>";
+                header("location:../funcionario.php");
+            }
+            //vincular os parametros
+            $preparar->bindParam(":nome",$Nome,PDO::PARAM_STR);
+            $preparar->bindParam(":sobrenome",$sobreNome, PDO::PARAM_STR);
+            $preparar->bindParam(":provincia",$provincia, PDO::PARAM_STR);
+            $preparar->bindParam(":municipio",$municipio, PDO::PARAM_STR);
+            $preparar->bindParam(":bairro",$bairro, PDO::PARAM_STR);
+            $preparar->bindParam(":telefone",$telefone, PDO::PARAM_STR);
+            $preparar->bindParam(":documentoID",$DocumentoID, PDO::PARAM_STR);
 
             //Executar a consulta
             if ($preparar->execute()) {
@@ -94,74 +131,7 @@ if (isset($_POST['add'])) {
                 Erro ao Cadastrar Usuário!
                 <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
                 </div>";
-                header("location:../motorista.php");
-            }
-            //Cadastrar Funcionario
-            if($Permissao =="Recepcionista"){
-                //Obter ID de usuario
-                $usuarioID = $conexao->lastInsertId();
-                //Consulta para inserir Motorista
-                $sql ="INSERT INTO `funcionarios` (`Nome`,`UsuarioID`) VALUES (:nome,:usuarioID)";
-                //Preparar a consulta
-                $preparar = $conexao->prepare($sql);
-                if ($preparar==false) {
-                    $_SESSION['msg_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-                    Erro na Preparação da Consulta!
-                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                    </div>";
-                    header("location:../funcionario.php");
-                }
-                //vincular os parametros
-                $preparar->bindParam(":nome",$Nome, PDO::PARAM_STR);
-                $preparar->bindParam(":usuarioID",$usuarioID, PDO::PARAM_INT);
-
-                //Executar a consulta
-                if ($preparar->execute()) {
-                    $_SESSION['msg_func']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-                    Funcionário Cadastrado com Sucesso.
-                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                    </div>";
-                    header("location:../funcionario.php");
-                }else {
-                    $_SESSION['msg_func']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-                    Erro ao Cadastrar Funcionário!
-                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                    </div>";
-                    header("location:../funcionario.php");
-                }
-            }else{
-                //Cadastrar Administrador
-                //Obter ID de usuario
-                $usuarioID = $conexao->lastInsertId();
-                //Consulta para inserir Motorista
-                $sql ="INSERT INTO `Administradores` (`Nome`,`UsuarioID`) VALUES (:nome,:usuarioID)";
-                //Preparar a consulta
-                $preparar = $conexao->prepare($sql);
-                if ($preparar==false) {
-                    $_SESSION['msg_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-                    Erro na Preparação da Consulta!
-                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                    </div>";
-                    header("location:../funcionario.php");
-                }
-                //vincular os parametros
-                $preparar->bindParam(":nome",$Nome, PDO::PARAM_STR);
-                $preparar->bindParam(":usuarioID",$usuarioID, PDO::PARAM_INT);
-
-                //Executar a consulta
-                if ($preparar->execute()) {
-                    $_SESSION['msg_func']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-                    Funcionário Cadastrado com Sucesso.
-                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                    </div>";
-                    header("location:../funcionario.php");
-                }else {
-                    $_SESSION['msg_func']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-                    Erro ao Cadastrar Funcionário!
-                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                    </div>";
-                    header("location:../funcionario.php");
-                }
+                header("location:../funcionario.php");
             }
             
         } 
