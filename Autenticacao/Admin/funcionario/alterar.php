@@ -1,5 +1,5 @@
 <?php 
-include_once '../../config_db.php';//inclui a base de dados
+include_once '../../credencias/config_db.php';//inclui a base de dados
 session_start();//Sessão iniciada
 ob_start();
 
@@ -7,143 +7,118 @@ ob_start();
 if(isset($_POST['cancelar'])){
     header('location: ../funcionario.php');
 }
-//Redefinr Senha
-if (isset($_POST['redefinir_senha'])) {
-  $UsuarioID = mysqli_escape_string($conexao,$_POST['UsuarioID']);
-  $Senha =  123456;
-  $Senha = password_hash($Senha,PASSWORD_DEFAULT);
 
-  //Consulta para apagar registo de aluguer
-  $sql="UPDATE `usuarios` SET `Senha` = ? WHERE `usuarios`.`UsuarioID` = ?";
-  //Preparar a consulta
-  $preparar=mysqli_prepare($conexao,$sql);
-  if ($preparar==false) {
-      $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-      Erro na Preparação da Consulta!
-      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-  </div>";
-  header("location:../cliente.php");
-  }
-  //VInvular os parametros
-  mysqli_stmt_bind_param($preparar,"si",$Senha,$UsuarioID);
-  //Exeucutar a preparação 
-  if (mysqli_stmt_execute($preparar)) {
-      //mensagem de sucesso
-      $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-      Senha Restaurada
-      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-  </div>";
-  header('location:../cliente.php');
-  }else {
-      //mensagem de sucesso de erro
-      $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-      Erro ao restaurar Senha
-      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-  </div>";
-  header('../cliente.php');
-  }
-
-}
 //Verficar o metodo que trás os dados
 if (isset($_POST['actualizar'])) {
-  $Nome =  mysqli_escape_string($conexao,$_POST['nome']);
-  $FuncionarioID = mysqli_escape_string($conexao,$_POST['FuncionarioID']);
-  //Dado de Usuario
-  $Email =  mysqli_escape_string($conexao,$_POST['email']);
-  $UsuarioID = mysqli_escape_string($conexao,$_POST['UsuarioID']);
+  //Dados do usuario
+  $Nome =  strip_tags($_POST['nome']);
+  $provincia =  strip_tags($_POST['provincia']);
+  $municipio =  strip_tags($_POST['municipio']);
+  $bairro =  strip_tags($_POST['bairro']);
+  $telefone =  strip_tags($_POST['telefone']);
+  //Dados do Documento
+  $Documento =  strip_tags($_POST['documento']);
+  $numDocumento=  strip_tags($_POST['numDoc']);
+  $DataValidade =  strip_tags($_POST['dataValidade']);
+  $DocumentoID = strip_tags($_POST['DocumentoID']);
+  $UsuarioID = strip_tags($_POST['UsuarioID']);
+  $SituacaoD= 1;
  
   if(empty($Nome)){
-    $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-    Digite o seu Nome!
+    $_SESSION['msg_edit_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+      Digite o Nome!
     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
     </div>";
-    header("location:../funcionario.php");
-  }elseif(empty($Email)){
-    $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-    Digite o seu Endereço de Email!
+    header("location:../edit_funcionario.php?id=$UsuarioID");
+  }elseif(empty($Documento)){
+    $_SESSION['msg_edit_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+        Seleciona o Documento!
     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
     </div>";
-    header("location:../funcionario.php");
+    header("location:../edit_funcionario.php?id=$UsuarioID");
+  }elseif(empty($numDocumento)){
+    $_SESSION['msg_edit_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+        Insira o Número do Documento.
+    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+    </div>";
+    header("location:../edit_funcionario.php?id=$UsuarioID");
+  }elseif(empty($DataValidade)){
+    $_SESSION['msg_edit_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+        Insira a Data de validade!
+    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+    </div>";
+    header("location:../edit_funcionario.php?id=$UsuarioID");
   }else{
-    //verificar se existe um veiculo com este nome
-    $sql="SELECT f.Nome FROM funcionarios f inner join usuarios u on f.UsuarioID = u.UsuarioID WHERE EstadoFuncionario = 'Activo' and FuncionarioID != $FuncionarioID";
-    $query = mysqli_query($conexao,$sql);
-    $dados=mysqli_fetch_array($query);
-    $NomeAnterior = $dados['Nome'];
-
-    if($Nome == "$NomeAnterior"){
-      $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-      Este Funcionário já está Registrado!
+    
+    //Consulta para alterar Usuario
+    $sql ="UPDATE `usuarios` SET `Nome` =:nome, `Telefone` =:telefone, `Provincia` =:provincia, `Municipio` =:municipio, `Bairro` =:bairro, `DocumentoID` =:documentoID WHERE `usuarios`.`UsuarioID` =:usuarioID";
+    //Preparar a consulta
+    $preparar_alterar_func = $conexao->prepare($sql);
+    if ($preparar_alterar_func==false) {
+      $_SESSION['msg_edit_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+        Erro na Preparação da Consulta! Consulte o Admin do sistema.
       <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
       </div>";
-      header("location:../funcionario.php");
+      header("location:../edit_funcionario.php?id=$UsuarioID");
+    }
+    //vincular os parametros
+    $preparar_alterar_func->bindParam(':nome',$Nome,PDO::PARAM_STR);
+    $preparar_alterar_func->bindParam(':provincia',$provincia, PDO::PARAM_STR);
+    $preparar_alterar_func->bindParam(':municipio',$municipio, PDO::PARAM_STR);
+    $preparar_alterar_func->bindParam(':bairro',$bairro, PDO::PARAM_STR);
+    $preparar_alterar_func->bindParam(':telefone',$telefone, PDO::PARAM_STR);
+    $preparar_alterar_func->bindParam(':documentoID',$DocumentoID, PDO::PARAM_INT);
+    $preparar_alterar_func->bindParam(':usuarioID',$UsuarioID, PDO::PARAM_INT);
+    $preparar_alterar_func->execute();
+    //Executar a consulta
+    if ($preparar_alterar_func->rowCount()) {
+      $_SESSION['msg_edit_func']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
+        Dados do Usuário Alterado com Sucesso.
+      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+      </div>";
+      header("location:../edit_funcionario.php?id=$UsuarioID.php");
     }else{
-        
-
-      //Consulta para inserir marcacao de Aluguer
-      $sql ="UPDATE `funcionarios` SET `Nome` = ? WHERE `funcionarios`.`FuncionarioID` = ?";
-      //Preparar a consulta
-      $preparar = mysqli_prepare($conexao,$sql);
-      if ($preparar==false) {
-        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+      $_SESSION['msg_edit_func']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+        Erro ao Alterar Dados do Usuário!
+      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+      </div>";
+      header("location:../edit_funcionario.php?id=$UsuarioID");
+    }  
+    //Consulta para inserir Usuario
+    $sql ="UPDATE `documentos` SET `Documento` =:documento, `NumDocumento` =:numDocumento, `dataValidade` =:dataValidade, `SituacaoDoc` =:situacaoDoc WHERE `documentos`.`DocumentoID` =:documentoID";
+    //Preparar a consulta
+    $preparar_alterar_doc = $conexao->prepare($sql);
+    if ($preparar_alterar_doc ==false) {
+        $_SESSION['msg_edit_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
         Erro na Preparação da Consulta!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
-        header("location:../funcionario.php");
-      }
-      //vincular os parametros
-      mysqli_stmt_bind_param($preparar,"si",$Nome,$FuncionarioID);
-
-      //Executar a consulta
-      if (mysqli_stmt_execute($preparar)) {
-          $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-          Dados do Funcionário Actualizados com Sucesso.
-          <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-          </div>";
-          header("location:../funcionario.php");
-      }else {
-          $_SESSION['msg']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-          Erro ao Actualizar Dados do Funcionário!
-          <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-          </div>";
-          header("location:../funcionario.php");
-      }
-
-      //DADOS DO USUÁRIO
-      //Consulta para inserir marcacao de Aluguer
-      $sql ="UPDATE `usuarios` SET `Email` = ? WHERE `usuarios`.`UsuarioID` = ?";
-      //Preparar a consulta
-      $preparar = mysqli_prepare($conexao,$sql);
-      if ($preparar==false) {
-        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Erro na Preparação da Consulta!
-        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-        </div>";
-        header("location:../funcionario.php");
-      }
-      //vincular os parametros
-      mysqli_stmt_bind_param($preparar,"si",$Email,$UsuarioID);
-
-      //Executar a consulta
-      if (mysqli_stmt_execute($preparar)) {
-        $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-        Dados do Usuário Actualizados com Sucesso.
-        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-        </div>";
-        header("location:../funcionario.php");
-      }else {
-        $_SESSION['msg']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-        Erro ao Actualizar Dados do Usuário!
-        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-        </div>";
-        header("location:../funcionario.php");
-      }
-          
-    } 
-  }    
+        header("location:../edit_funcionario.php?id=$UsuarioID");
+    }
+    
+    //vincular os parametros
+    $preparar_alterar_doc->bindParam(":documento",$Documento,PDO::PARAM_STR);
+    $preparar_alterar_doc->bindParam(":numDocumento",$numDocumento,PDO::PARAM_STR);
+    $preparar_alterar_doc->bindParam(":dataValidade",$DataValidade,PDO::PARAM_STR);
+    $preparar_alterar_doc->bindParam(":situacaoDoc",$SituacaoD,PDO::PARAM_INT);
+    $preparar_alterar_doc->bindParam(":documentoID",$DocumentoID,PDO::PARAM_INT);
+    $preparar_alterar_doc->execute();
+    //Executar a consulta
+    if ($preparar_alterar_doc->execute()) {
+      $_SESSION['msg_edit_func']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
+      Dados do Usuário Alterado com Sucesso.
+      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+      </div>";
+      header("location:../edit_funcionario.php?id=$UsuarioID.php");
+    }else {
+      $_SESSION['msg_edit_func']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+        Erro ao Alterar Dados do Usuário!
+      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+      </div>";
+      header("location:../edit_funcionario.php?id=$UsuarioID");
+    }  
+  } 
 
 }
-//Fechar a e consulta e a conexao
-mysqli_stmt_close($preparar);
-mysqli_close($conexao);
+
 ?>

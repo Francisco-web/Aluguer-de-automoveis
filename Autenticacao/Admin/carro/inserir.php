@@ -1,20 +1,20 @@
 
 <?php 
-include_once '../../config_db.php';//inclui a base de dados
+include_once '../../credencias/config_db.php';//inclui a base de dados
 session_start();//Sessão iniciada
 ob_start();
 
 //Verficar o metodo que trás os dados
 if (isset($_POST['add'])) {
-  $Modelo = mysqli_escape_string($conexao,$_POST['modelo']);
-  $Ano = mysqli_escape_string($conexao,$_POST['ano']);
-  $Placa = mysqli_escape_string($conexao,$_POST['placa']);
-  $ValorDiario = mysqli_escape_string($conexao,$_POST['valorDiario']);
-  $Lugar = mysqli_escape_string($conexao,$_POST['lugar']);
-  $Bagageira = mysqli_escape_string($conexao,$_POST['bagageira']);
-  $Conforto = mysqli_escape_string($conexao,$_POST['conforto']);
-  $Porta = mysqli_escape_string($conexao,$_POST['porta']);
-  $MotorSeguranca = mysqli_escape_string($conexao,$_POST['motorSeguranca']);
+  $Modelo = $_POST['modelo'];
+  $Ano = $_POST['ano'];
+  $Placa = $_POST['placa'];
+  $ValorDiario = $_POST['valorDiario'];
+  $Lugar = $_POST['lugar'];
+  $Bagageira = $_POST['bagageira'];
+  $Conforto = $_POST['conforto'];
+  $Porta = $_POST['porta'];
+  $MotorSeguranca = $_POST['motorSeguranca'];
   $Disponivel = 1;
   $Imagem = $_FILES['imagem'];
 
@@ -45,10 +45,12 @@ if (isset($_POST['add'])) {
   }else {
         //verificar se existe um veiculo com este nome
         $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria FROM carros  ORDER BY Modelo";
-        $query = mysqli_query($conexao,$sql);
-        $dados=mysqli_fetch_array($query);
-        $PlacaAnterior = $dados['Placa'];
-
+        $preparar_consultar_veiculo = $conexao->prepare($sql);
+        $preparar_consultar_veiculo->execute();
+        $resultado_consultar_veiculo= $preparar_consultar_veiculo->fetchAll(PDO::FETCH_ASSOC);
+        foreach($resultado_consultar_veiculo as $dados){
+            $PlacaAnterior = $dados['Placa'];
+        }
         if($Placa == "$PlacaAnterior"){
             $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
             Este Veículo já está Cadastrado!
@@ -105,21 +107,25 @@ if (isset($_POST['add'])) {
                     $Imagem = $Imagem['name'];
 
                     //Consulta para inserir marcacao de Aluguer
-                    $sql ="INSERT INTO `carros` (`Imagem`,`Modelo`, `Ano`, `Placa`,`Lugar`,`Porta`,`Bagageira`,`MotorSeguranca`,`Conforto`,`Disponivel`, `ValorDiaria`) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+                    $sql ="INSERT INTO `carros` (`Imagem`,`Modelo`, `Ano`, `Placa`,`Lugar`,`Porta`,`Bagageira`,`MotorSeguranca`,`Conforto`,`Disponivel`, `ValorDiaria`) VALUES (:imagem,:modelo,:ano,:placa,:lugar,:porta,:bagageira,:motorSeguranca,:conforto,:disponivel,:valorDiario)";
                     //Preparar a consulta
-                    $preparar = mysqli_prepare($conexao,$sql);
-                    if ($preparar==false) {
+                    $preparar_inserir_veiculo = $conexao->prepare($sql);
+                    if ($preparar_inserir_veiculo==false) {
                         $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
                         Erro na Preparação da Consulta!
                         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
                         </div>";
                         header("location:../veiculo.php");
                     }
-                    //vincular os parametros
-                    mysqli_stmt_bind_param($preparar,"ssissssssid",$Imagem,$Modelo,$Ano,$Placa,$Lugar,$Porta,$Bagageira,$MotorSeguranca,$Conforto,$Disponivel,$ValorDiario);
+                    //vincular os parametro
+                    $preparar_inserir_veiculo->bindParam(":imagem",$Imagem,PDO::PARAM_STR);
+                    $preparar_inserir_veiculo->bindParam(":modelo",$Modelo,PDO::PARAM_STR);
+                    $preparar_inserir_veiculo->bindParam(":ano",$Ano,PDO::PARAM_INT);
+                    $preparar_inserir_veiculo->bindParam(":placa",$Placa,PDO::PARAM_STR);$preparar_inserir_veiculo->bindParam(":lugar",$Lugar,PDO::PARAM_INT);$preparar_inserir_veiculo->bindParam(":porta",$Porta,PDO::PARAM_INT);$preparar_inserir_veiculo->bindParam(":bagageira",$Bagageira,PDO::PARAM_STR);$preparar_inserir_veiculo->bindParam(":motorSeguranca",$MotorSeguranca,PDO::PARAM_STR);
+                    $preparar_inserir_veiculo->bindParam(":conforto",$Conforto,PDO::PARAM_STR);$preparar_inserir_veiculo->bindParam(":disponivel",$Disponivel,PDO::PARAM_INT);$preparar_inserir_veiculo->bindParam(":valorDiario",$ValorDiario,PDO_PARAM_INT);
 
                     //Executar a consulta
-                    if (mysqli_stmt_execute($preparar)) {
+                    if ($preparar_inserir_veiculo->execute()) {
                         $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
                         Veículo Cadastrado com Sucesso.
                         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
@@ -137,7 +143,5 @@ if (isset($_POST['add'])) {
         } 
     }    
 }
-//Fechar a e consulta e a conexao
-mysqli_stmt_close($preparar);
-mysqli_close($conexao);
+
 ?>

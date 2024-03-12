@@ -29,38 +29,71 @@ if (isset($_GET['id'])) {
     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
     </div>";
     header("location:../usuario.php");
-  }
-  //Mudar o Estado do Usuario
-  $sql="DELETE FROM `usuarios` WHERE `usuarios`.`UsuarioID` =:usuarioID";
-  //Preparar a consulta
-  $preparar=prepare($sql);
-  if ($preparar==false) {
-      $_SESSION['msg_usuario']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-      Erro na Preparação da Consulta, Consulte o Admin do Sistema!
-      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-    </div>";
-    header("location:../usuario.php");
-  }
-  //VInvular os parametros
-  $prepar->bind_param(':usuarioID',$UsuarioID,PDO::PARAM_INT);
-  //Exeucutar a preparação 
-  if (execute($preparar)) {
-    //mensagem de sucesso
-    $_SESSION['msg_usuario']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-      Usuário Apagado.
-    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-    </div>";
-    header('location:../usuario.php');
   }else {
-    //mensagem de sucesso de erro
-    $_SESSION['msg_usuario']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-      Erro ao Apagar Usuário!
-    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-    </div>";
-    header('../usuario.php');
+    
+  
+    //Mudar o Estado do Usuario
+    $sql="DELETE FROM `usuarios` WHERE `usuarios`.`UsuarioID` =:usuarioID";
+    //Preparar a consulta
+    $preparar_apagar_usuario =$conexao->prepare($sql);
+    if ($preparar_apagar_usuario==false) {
+        $_SESSION['msg_usuario']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+        Erro na Preparação da Consulta, Consulte o Admin do Sistema!
+        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+      </div>";
+      header("location:../usuario.php");
+    }
+    //VInvular os parametros
+    $preparar_apagar_usuario->bindParam(':usuarioID',$UsuarioID,PDO::PARAM_INT);
+    //Exeucutar a preparação 
+    if ($preparar_apagar_usuario->execute()) {
+      if ($Permissao_db =="Cliente") {
+        $sql="SELECT cl.ClienteID FROM Clientes cl inner join usuarios u on cl.UsuarioID=u.UsuarioID WHERE cl.UsuarioID=:usuarioID";
+        $prepare_verificacao_cliente= $conexao->prepare($sql);
+        $prepare_verificacao_cliente->bindParam(':usuarioID',$UsuarioID,PDO::PARAM_INT);
+        $prepare_verificacao_cliente->execute();
+        $resultado_cliente= $prepare_verificacao_cliente->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($resultado as $dados) {
+          $ClienteID = $dados['ClienteID'];
+        }
+        //Apagar Cliente  
+        $sql="DELETE FROM `clientes` WHERE `clientes`.`ClienteID` =:clienteID";
+        
+        //Preparar a consulta
+        $preparar_apagar_cliente =$conexao->prepare($sql);
+        if ($preparar_apagar_cliente==false) {
+            $_SESSION['msg_usuario']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+            Erro na Preparação da Consulta, Consulte o Admin do Sistema!
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+          </div>";
+          header("location:../usuario.php");
+        }
+        //VInvular os parametros
+        $preparar_apagar_cliente->bindParam(':clienteID',$ClienteID,PDO::PARAM_INT);
+        //Exeucutar a preparação 
+        if ($preparar_apagar_cliente->execute()) {
+          //mensagem de sucesso
+          $_SESSION['msg_usuario']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
+            Usuário Apagado
+          <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+          </div>";
+          header('location:../usuario.php');
+        }else {
+          //mensagem de sucesso de erro
+          $_SESSION['msg_usuario']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
+            Erro ao Apagar Usuário!
+          <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+          </div>";
+          header('../usuario.php');
+        }
+      }
+    }else {
+      //mensagem de sucesso de erro
+      $_SESSION['msg_usuario']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
+        Erro ao Apagar Usuário!
+      <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+      </div>";
+      header('../usuario.php');
+    }
   }
 }
-
-//Fechar a e consulta e a conexao
-$preparar->close();
-$conexao->close();

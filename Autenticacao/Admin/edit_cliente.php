@@ -11,22 +11,32 @@ include_once 'sidebar/sidebar.php';
  
 //-- ======= Consulta ao anco de Dados ======= -->
 if (isset($_GET['id'])) {
-  $id = mysqli_escape_string($conexao,$_GET['id']);
+  $id = filter_input(INPUT_GET,'id',FILTER_SANITIZE_NUMBER_INT);
   //Consulta no banco para mostar os dados do motorista
-  $EstadoCliente="Apagado";
-  $sql="SELECT cl.UsuarioID,ClienteID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco,NumDocumento,Documento,Email FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID WHERE EstadoCliente != '$EstadoCliente'";
-  $query = mysqli_query($conexao,$sql);
-  $dados=mysqli_fetch_array($query);
-  $Documento = $dados['Documento']; 
-  $NumDocumento = $dados['NumDocumento']; 
-  $ClienteID = $dados['ClienteID'];  
-  $Nome = $dados['Nome'];
-  $CartaConducao = $dados['CartaConducao'];
-  $Telefone = $dados['Telefone'];
-  $Estadousuario = $dados['EstadoUsuario'];
-  $Endereco = $dados['Endereco'];
-  $UsuarioID = $dados['UsuarioID'];
-  $Email = $dados['Email'];
+  $sql="SELECT cl.ClienteID,us.UsuarioID,us.DocumentoID,Telefone,Situacao,Nome,Email,Provincia,Municipio,Bairro,Permissao,dm.Documento,dm.FileDoc,dm.NumDocumento,dm.dataValidade,dm.SituacaoDoc FROM clientes cl inner join usuarios us on cl.UsuarioID=us.UsuarioID join documentos dm on us.DocumentoID=dm.DocumentoID WHERE ClienteID = :id LIMIT 1";
+  $prepare_edit_func = $conexao->prepare($sql);
+  $prepare_edit_func->bindParam(':id',$id,PDO::PARAM_INT);
+  $prepare_edit_func->execute();
+  $result_edit_func = $prepare_edit_func->fetchAll(PDO::FETCH_ASSOC);
+  foreach($result_edit_func as $dados){
+    $Telefone = $dados['Telefone'];  
+    $Nome = $dados['Nome'];
+    $Situacao = $dados['Situacao'];
+    $ClienteID = $dados['ClienteID'];
+    $UsuarioID = $dados['UsuarioID'];
+    $DocumentoID = $dados['DocumentoID'];
+    $Email = $dados['Email'];
+    $Permissao = $dados['Permissao'];
+    $SituacaDoc = $dados['SituacaoDoc'];  
+    $Provincia = $dados['Provincia'];
+    $Municipio = $dados['Municipio'];
+    $Bairro = $dados['Bairro'];
+    $Documento = $dados['Documento'];
+    $FileDoc = $dados['FileDoc'];
+    $Email = $dados['Email'];
+    $NumDocumento = $dados['NumDocumento'];
+    $DataVal = $dados['dataValidade'];
+  }
 }
 ?> 
 
@@ -44,9 +54,9 @@ if (isset($_GET['id'])) {
     </div><!-- End Page Title -->
     <?php
     //SESSAO para mostrar mesagem
-    if (isset($_SESSION['msg'])) {
-        echo $_SESSION['msg'];
-        unset($_SESSION['msg']);
+    if (isset($_SESSION['msg_edit_cl'])) {
+        echo $_SESSION['msg_edit_cl'];
+        unset($_SESSION['msg_edit_cl']);
     }
     ?>
     <section class="section dashboard">
@@ -66,33 +76,76 @@ if (isset($_GET['id'])) {
 
                         <!-- No Labels Form -->
                         <form class="row g-3" method="POST" action="cliente/alterar.php">
-                          <input type="text" class="form-control" value="<?php echo $ClienteID;?>" name="ClienteID">
-                          <input type="text" class="form-control" value="<?php echo $UsuarioID;?>" name="UsuarioID">
+                          
+                          <div class="col-md-6">
+                            <input type="hidden" name="UsuarioID" class="form-control" placeholder="Usuario ID" autocomplete="off"  value="<?php echo $UsuarioID;?>"  required>
+                          </div>
+                          <div class="col-md-6">
+                            <input type="hidden" name="DocumentoID" class="form-control" placeholder="Documento ID" autocomplete="off" value="<?php echo $DocumentoID;?>"  required>
+                          </div>
                           <div class="col-md-6">
                             <input type="text" name="nome" class="form-control" placeholder="Nome" autocomplete="off" minlength="4" value="<?php echo $Nome;?>"  required>
                           </div>
-                          <div class="col-md-6">
-                            <input type="text" name="telefone" class="form-control" placeholder="Telefone" autocomplete="off" minlength="9" value="<?php echo $Telefone;?>" required>
-                          </div>
-                          <div class="col-md-6">
-                            <input type="text" name="cartaConducao" readonly minlength="6" class="form-control" placeholder="Nº Carta de Condução" autocomplete="off" value="<?php echo $CartaConducao;?>" required >
-                          </div>
-                          <div class="col-md-6">
-                            <textarea name="endereco" id="endereco" autocomplete="off" required class="form-control" cols="5" rows="3" placeholder="Endereço"><?php echo $Endereco;?></textarea>
+                          <div class="col-6">
+                            <input type="text" class="form-control" name="provincia" placeholder="Província" autocomplete="off" value="<?php echo $Provincia;?>">
                           </div>
                           <div class="col-6">
-                            <input type="email" class="form-control" name="email" placeholder="Email" autocomplete="off" value="<?php echo $Email;?>" required>
+                            <input type="text" class="form-control" name="municipio" placeholder="Município"  value="<?php echo $Municipio;?>" autocomplete="off">
                           </div>
                           <div class="col-6">
-                            <input type="text" class="form-control" name="email" placeholder="Email" autocomplete="off" value="<?php echo $Documento;?>" required>
+                            <input type="text" class="form-control" name="bairro" placeholder="Bairro" autocomplete="off" value="<?php echo $Bairro;?>">
                           </div>
                           <div class="col-6">
-                            <input type="text" class="form-control" readonly name="numDocumento" value="<?php echo $NumDocumento;?>" placeholder="Nº Documento" autocomplete="off" >
+                            <input type="number" class="form-control" name="telefone" placeholder="Telefone" autocomplete="off" minlength="13" maxlength="13" value="<?php echo $Telefone;?>">
+                          </div>
+                          <div class="col-md-6">
+                            <select name="documento" id="" class="form-control" >
+                              <option value="">Documento</option>
+                              <option value="B.I"<?php if ($Documento == "B.I") {
+                                echo"Selected";
+                              };?>>B.I</option>
+                              <option value="Passa-Porte"<?php if ($Documento=="Passa-Porte") {
+                                echo"Selected";
+                              };?>>Passa-Porte</option>
+                            </select>
+                          </div>
+                          <div class="col-6">
+                            <input type="text" class="form-control" name="numDocumento" placeholder="Doc. Nº" autocomplete="off" value="<?php echo $NumDocumento;?>">
+                          </div>
+                          <div class="col-6">
+                            <input type="date" class="form-control" name="dataValidade" placeholder="Doc. Nº" autocomplete="off" value="<?php echo $DataVal;?>">
+                          </div>
+                          <div class="col-md-6">
+                            <select name="situacaoDocumento" id="" class="form-control" >
+                              <option value="">Situação Documento</option>
+                              <option value="1"<?php if ($SituacaDoc == 1) {
+                                echo"Selected";
+                              };?>>Válido</option>
+                              <option value="0"<?php if ($Documento==0) {
+                                echo"Selected";
+                              };?>>Expirou</option>
+                            </select>
+                          </div>
+                          <div class="col-6">
+                            <input type="file" class="form-control" name="fileDoc" placeholder="FicheiroDocumento" autocomplete="off" value="<?php echo $FileDoc;?>">
+                          </div>
+                          <div class="col-md-6">
+                            <input type="hidden" name="ClienteID" class="form-control" placeholder="Cliente ID" autocomplete="off"  value="<?php echo $ClienteID;?>"  required>
+                          </div>
+                          <div class="col-md-6">
+                            <select name="situacao" id="" class="form-control" required>
+                              <option value="">Situação</option>
+                              <option value="Activo"<?php if ($Situacao =="Activo") {
+                                echo "Selected";
+                              }?>>Activo</option>
+                              <option value="Inactivo"<?php if ($Situacao=="Inactivo") {
+                                echo "Selected";
+                              }?>>Inactivo</option>
+                            </select>
                           </div>
                           <div class="text-center">
                             <button type="submit" name="cancelar" class="btn btn-secondary" >Cancelar</button>
                             <button type="submit" name="actualizar" class="btn btn-primary">Actualizar</button>
-                          <button type="submit" name="redefinir_senha" class="btn btn-warning">Restaurar Senha</button>
                           </div>
                         </form>
                       </div>

@@ -37,11 +37,11 @@ ob_start();
 if (!isset($_SESSION['UsuarioID']) AND ($_SESSION['Permissao']!='Administrador')) {
   header("location:../sair.php");
 }
-$UsuarioID = $_SESSION['UsuarioID'];
+$UsuarioID_Admin = $_SESSION['UsuarioID'];
 //Dados do Admin
 $sql= "SELECT Nome,Permissao,Situacao,Senha,Email,Provincia,Municipio,Bairro FROM usuarios WHERE UsuarioID =:usuarioID";
 $prepare_us= $conexao->prepare($sql);
-$prepare_us->bindParam(':usuarioID',$UsuarioID,PDO::PARAM_STR);
+$prepare_us->bindParam(':usuarioID',$UsuarioID_Admin,PDO::PARAM_STR);
 $prepare_us->execute();
 $resultado=$prepare_us->fetchAll(PDO::FETCH_ASSOC);
 foreach($resultado as $dados){

@@ -35,9 +35,9 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
     </div><!-- End Page Title -->
     <?php
     //SESSAO para mostrar mesagem
-    if (isset($_SESSION['msg'])) {
-        echo $_SESSION['msg'];
-        unset($_SESSION['msg']);
+    if (isset($_SESSION['msg_cliente'])) {
+        echo $_SESSION['msg_cliente'];
+        unset($_SESSION['msg_cliente']);
     }
     ?>
     <section class="section dashboard">
@@ -50,20 +50,20 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
             <div class="col-12">
               <div class="card recent-sales overflow-auto">
 
-                <div class="filter">
+                <div class="card-title">
                   <a class="btn btn btn-primary" data-bs-toggle="modal" data-bs-target="#largeModal" href="#" ><i class="bi bi-plus"></i>Novo</a>
                 </div>
 
                 <div class="card-body">
-                  <h5 class="card-title"> Consultar Lista de Clientes</h5>
-                    
+                  <h5 class=""></h5>
                   <table class="table table-bordered border-primary">
                     <thead>
                       <tr>
+                        <th scope="col">ID</th>
                         <th scope="col">Nome</th>
                         <th scope="col">Documento</th>
-                        <th scope="col">Nº BI/Passa Porte</th>
-                        <th scope="col">Nº Carta de Condução</th>
+                        <th scope="col">Doc. Nº</th>
+                        <th scope="col">Município</th>
                         <th scope="col">Email</th>
                         <th scope="col">Telefone</th>
                         <th scope="col">Situação</th>
@@ -75,47 +75,49 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                       if(!empty($_GET['pesquisar'])) {
                         $dados = $_GET['pesquisar'];
                         $EstadoCliente="Apagado";
-                        $sql="SELECT cl.UsuarioID,ClienteID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco,NumDocumento,Documento,Email FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID WHERE EstadoCliente != '$EstadoCliente' and Nome like '%$dados%' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
+                        $sql="SELECT cl.ClienteID,cl.UsuarioID,Nome,Situacao,Telefone,Bairro,Provincia,Municipio,NumDocumento,Documento,Email,Permissao FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID join documentos d on u.DocumentoID = d.DocumentoID WHERE Nome like '%$dados%' or cl.UsuarioID like '%$dados%' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }else {
                         $EstadoCliente="Apagado";
-                        $sql="SELECT cl.UsuarioID,ClienteID,Nome,CartaConducao,EstadoUsuario,Telefone,Endereco,NumDocumento,Documento,Email FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID WHERE EstadoCliente != '$EstadoCliente' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
+                        $sql="SELECT cl.ClienteID,cl.UsuarioID,Nome,Situacao,Telefone,Bairro,Provincia,Municipio,NumDocumento,Documento,Email,Permissao FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID join documentos d on u.DocumentoID = d.DocumentoID  ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }
-                      $query = mysqli_query($conexao,$sql);
-                      while ($dados=mysqli_fetch_array($query)) :
+                      $prepare_cliente = $conexao->prepare($sql);
+                      $prepare_cliente->execute();
+                      $resultado = $prepare_cliente->fetchAll(PDO::FETCH_ASSOC);
+                      foreach($resultado as $dados){
                         $Documento = $dados['Documento']; 
                         $NumDocumento = $dados['NumDocumento']; 
-                        $ClienteID = $dados['ClienteID'];  
                         $Nome = $dados['Nome'];
-                        $CartaConducao = $dados['CartaConducao'];
                         $Telefone = $dados['Telefone'];
-                        $Estadousuario = $dados['EstadoUsuario'];
-                        $Endereco = $dados['Endereco'];
+                        $ClienteID = $dados['ClienteID'];
                         $UsuarioID = $dados['UsuarioID'];
                         $Email = $dados['Email'];
+                        $Municipio = $dados['Municipio'];
+                        $Situacao = $dados['Situacao'];
                     ?>
                     <tbody>
                       <tr>
+                        <td><?php echo $UsuarioID;?></td>
                         <td><?php echo $Nome;?></td>
                         <td><?php echo $Documento;?></td>
-                        <td class="text-primary"><?php echo $NumDocumento;?></td>
-                        <td class="text-primary"><?php echo $CartaConducao;?></td>
+                        <td><?php echo $NumDocumento;?></td>
+                        <td><?php echo $Municipio;?></td>
                         <td><?php echo $Email;?></td>
                         <td><?php echo $Telefone;?></td>
-                        <td><?php echo $Estadousuario == 'Activo' ? "<a class='btn btn-warning' disabled href='cliente/disponivel.php?Disponivel=Activo&id=$UsuarioID'><i class='bi-undo'></i> $Estadousuario</a>":"<a class='btn btn-dark' href='cliente/disponivel.php?Disponivel=Inactivo&id=$UsuarioID'><i class='bi-undo'></i>$Estadousuario</a>";?></td>
+                        <td><?php echo $Situacao == 'Activo' ? "<a class='btn btn-warning' href='cliente/disponivel.php?Disponivel=Activo&id=$UsuarioID'><i class='bi-undo'></i> $Situacao</a>":"<a class='btn btn-dark' href='cliente/disponivel.php?Disponivel=Inactivo&id=$UsuarioID'><i class='bi-undo'></i>$Situacao</a>";?></td>
                         <td> 
                           <div class="btn-group">
-                            <a class="btn btn-secondary" href="../imprimir/cliente.php?id=<?php echo $ClienteID;?>"><i   class="bi-eye"></i></a>
                             <a class="btn btn-primary" href="edit_cliente.php?id=<?php echo $ClienteID;?>"><i class="ri-edit-line"></i></a>
-                            <a class="btn btn-danger" href="cliente/deletar.php?id=<?php echo $ClienteID;?>" onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
+                            <a class="btn btn-danger" href="cliente/deletar.php?id=<?php echo $UsuarioID;?>"onclick="return confirm('Tens Certeza que quer Apagar Este Registo?')" ><i class="ri-delete-bin-5-line"></i><a>
                           </div>
                         </td>
                       </tr>
                     </tbody>
-                    <?php endwhile;
+                    <?php };
                       //Somar todos os registros 
-                      $result_pg="SELECT Count(ClienteID) as NumID FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID";
-                      $resultado_pg = mysqli_query($conexao, $result_pg);
-                      $row_pg = mysqli_fetch_assoc($resultado_pg);
+                      $result_pg="SELECT Count(ClienteID) as NumID FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID join documentos d on u.DocumentoID = d.DocumentoID";
+                      $resultado_pg = $conexao->prepare($result_pg);
+                      $resultado_pg->execute();
+                      $row_pg = $resultado_pg->fetch();
                       //echo $row_pg['num_result'];
                       //Quantidade de pagina 
                       $quantidade_pg = ceil($row_pg['NumID'] / $qnt_result_pg);
@@ -177,7 +179,6 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
           <div class="modal-body">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Dados do Cliente</h5>
 
                 <!-- No Labels Form -->
                 <form class="row g-3" method="POST" action="cliente/inserir.php" enctype="multipart/form-data">
@@ -185,41 +186,38 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                     <input type="text" name="nome" class="form-control" placeholder="Nome" autocomplete="off" required>
                   </div>
                   <div class="col-md-6">
-                    <input type="text" name="telefone" class="form-control" placeholder="Telefone" autocomplete="off" required>
+                    <input type="text" name="provincia" class="form-control" placeholder="Província" autocomplete="off" required >
+                  </div>
+                  <div class="col-md-6">
+                    <input type="text" name="municipio" class="form-control" placeholder="Município" autocomplete="off" required >
+                  </div>
+                  <div class="col-md-6">
+                    <input type="text" name="bairro" class="form-control" placeholder="Bairro" autocomplete="off" required>
+                  </div>
+                  <div class="col-md-6">
+                    <input type="text" name="telefone" class="form-control" placeholder="Telefone" minlength="9" autocomplete="off" required>
                   </div>
                   <div class="col-6">
                     <input type="Email" class="form-control" name="email" placeholder="Email" autocomplete="off" required>
-                  </div>
-                  <div class="col-md-6">
-                    <input type="text" name="cartaConducao" class="form-control" placeholder="Nº Carta de Condução" autocomplete="off" required >
-                  </div>
-                  <div class="col-md-6">
-                    <textarea name="endereco" id="endereco" autocomplete="off" required class="form-control" cols="5" rows="3" placeholder="Endereço"></textarea>
                   </div>
                   <div class="col-md-6">
                     <select name="documento" id="" class="form-control" required>
                       <option value="">Selecionar Documento</option>
                       <option value="B.I">Bilhete de Identidade</option>
                       <option value="Passa Porte">Passa Porte</option>
+                      <option value="Carta de Condução">Carta de Condução</option>
                     </select>
                   </div>
                   <div class="col-md-6">
-                  <input type="text" name="numDocumento" class="form-control" placeholder="Nº Documento" autocomplete="off" required >
+                  <input type="text" name="numDocumento" class="form-control" placeholder="Nº Documento" minlength="14" autocomplete="off" required >
                   </div>
-                  <div class="col-sm-10">
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="situacao" id="gridRadios1" value="Activo" checked="">
-                      <label class="form-check-label" for="gridRadios1">
-                        Conta Activa
-                      </label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="radio" name="situacao" id="gridRadios2" value="Inactivo">
-                      <label class="form-check-label" for="gridRadios2">
-                        Conta Inactiva
-                      </label>
-                    </div>
+                  <div class="col-md-6">
+                  <input type="date" name="dataValidade" class="form-control" placeholder="Data de validade" autocomplete="off" required >
                   </div>
+                  <div class="col-md-6">
+                  <input type="file" name="filedoc" class="form-control" placeholder="Ficheiro BI" autocomplete="off">
+                  </div>
+                  
                   <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" name="add" class="btn btn-primary">Guardar</button>

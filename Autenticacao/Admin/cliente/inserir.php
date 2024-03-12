@@ -1,146 +1,175 @@
 
 <?php 
-include_once '../../config_db.php';//inclui a base de dados
+include_once '../../credencias/config_db.php';//inclui a base de dados
 session_start();//Sessão iniciada
 ob_start();
 
 //Verficar o metodo que trás os dados
 if (isset($_POST['add'])) {
-  $Nome =  mysqli_escape_string($conexao,$_POST['nome']);
-  $CartaConducao =  mysqli_escape_string($conexao,$_POST['cartaConducao']);
-  $Telefone =  mysqli_escape_string($conexao,$_POST['telefone']);
-  $Endereco =  mysqli_escape_string($conexao,$_POST['endereco']);
-  $NumDocumento =  mysqli_escape_string($conexao,$_POST['numDocumento']);
-  $Documento =  mysqli_escape_string($conexao,$_POST['documento']);
-
-  //Dado de Usuario
-  $email =  mysqli_escape_string($conexao,$_POST['email']);
-  $senha =  123456; //Senha padrão par aos cliente
-  $senha = password_hash($senha,PASSWORD_DEFAULT);
-  $Permissao = 'Cliente';
-  $EstadoUsuario = mysqli_escape_string($conexao,$_POST['situacao']);
+  $Nome =  strip_tags($_POST['nome']);
+  $Telefone =  strip_tags($_POST['telefone']);
+  $Provincia = strip_tags($_POST['provincia']);
+  $Municipio = strip_tags($_POST['municipio']);
+  $Bairro = strip_tags($_POST['bairro']);
+  $Email = strip_tags($_POST['email']);
+  $Permissao = "Cliente";
+  //Dados de Documento
+  $NumDocumento = strip_tags($_POST['numDocumento']);
+  $DataValidade = strip_tags($_POST['dataValidade']);
+  $SituacaoD = 1;
+  $FileDoc = "Copia do BI";
+  $Documento = strip_tags($_POST['documento']);
 
     if(empty($Nome)){
-      $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+      $_SESSION['msg_cliente']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
         Digite o seu Nome!
       <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
       </div>";
       header("location:../cliente.php");
-    }elseif(empty($CartaConducao)){
-        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Insira o Nº da Carta de Condução!
-        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-        </div>";
-        header("location:../cliente.php");
     }elseif(empty($Telefone)){
-        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Insira o Seu Número de Telefone!
+        $_SESSION['msg_cliente']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+            Insira o Seu Número de Telefone!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../cliente.php");
-    }elseif(empty($Endereco)){
-        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Digite o seu Endereço
-        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-        </div>";
-        header("location:../cliente.php");
-    }elseif(empty($email)){
-        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Digite o seu Endereço de Email!
+    }elseif(empty($Email)){
+        $_SESSION['msg_cliente']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+            Digite o Email!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../cliente.php");
     }elseif(empty($NumDocumento)){
-        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Insira o Número do Documento de identidade!
+        $_SESSION['msg_cliente']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+            Insira o Número do Documento de identidade!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../cliente.php");
     }elseif(empty($Documento)){
-        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Seleciona o Documento de identidade!
+        $_SESSION['msg_cliente']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+            Seleciona o Documento de identidade!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../cliente.php");
     }else{
         //verificar se existe um veiculo com este nome
-        $sql="SELECT cl.NumDocumento FROM clientes cl inner join usuarios u on cl.UsuarioID = u.UsuarioID ";
-        $query = mysqli_query($conexao,$sql);
-        $dados=mysqli_fetch_array($query);
-        $NumDocumentoAnterior = $dados['NumDocumento'];
+        $sql="SELECT NumDocumento,email FROM clientes cl inner join usuarios u on  cl.UsuarioID = u.UsuarioID join documentos d on u.DocumentoID = d.DocumentoID ";
+        $preparar_verificar_cliente= $conexao->prepare($sql);
+        $preparar_verificar_cliente->execute();
+        $resultado= $preparar_verificar_cliente->fetchAll(PDO::FETCH_ASSOC);
+        foreach($resultado as $dados){
+            $NumDocumento_db = $dados['NumDocumento'];
+            $Email_db = $dados['email'];
+        }
 
-        if($NumDocumento == "$NumDocumentoAnterior"){
-            $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-            Este Cliente já está Cadastrado!
+        if($NumDocumento == $NumDocumento_db){
+            $_SESSION['msg_cliente']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+                Este Cliente já Existe!
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>";
+            header("location:../cliente.php");
+        }elseif($Email == $Email_db){
+            $_SESSION['msg_cliente']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+                Este Email já Existe!
             <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
             </div>";
             header("location:../cliente.php");
         }else{
-           
-            //Consulta para inserir marcacao de Aluguer
-            $sql ="INSERT INTO `usuarios` (`Email`,`Senha`, `Permissao`, `EstadoUsuario`) VALUES (?,?,?,?)";
+            //Consulta para inserir Documento
+            $sql ="INSERT INTO `documentos` (`Documento`, `FileDoc`, `NumDocumento`, `dataValidade`, `SituacaoDoc`) VALUES (:documento,:fileDoc,:numDocumento,:dataValidade,:situacaoDoc)";
             //Preparar a consulta
-            $preparar = mysqli_prepare($conexao,$sql);
-            if ($preparar==false) {
-                $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-                Erro na Preparação da Consulta!
+            $preparar_inserir_doc = $conexao->prepare($sql);
+            if ($preparar_inserir_doc ==false) {
+                $_SESSION['msg_cliente']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+                    Erro na Preparação da Consulta! Consulte o Admin do Sistema.
                 <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
                 </div>";
                 header("location:../cliente.php");
             }
+            
             //vincular os parametros
-            mysqli_stmt_bind_param($preparar,"ssss",$email,$senha,$Permissao,$EstadoUsuario);
-
+            $preparar_inserir_doc->bindParam(':documento',$Documento,PDO::PARAM_STR);
+            $preparar_inserir_doc->bindParam(':fileDoc',$FileDoc,PDO::PARAM_STR);
+            $preparar_inserir_doc->bindParam(':numDocumento',$NumDocumento,PDO::PARAM_STR);
+            $preparar_inserir_doc->bindParam(':dataValidade',$DataValidade,PDO::PARAM_STR);
+            $preparar_inserir_doc->bindParam(':situacaoDoc',$SituacaoD,PDO::PARAM_INT);
+            $preparar_inserir_doc->execute();
             //Executar a consulta
-            if (mysqli_stmt_execute($preparar)) {
-                $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-                Usuário Cadastrado com Sucesso.
-                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                </div>";
-                header("location:../cliente.php");
+            if ($preparar_inserir_doc->rowCount()) {
+                //Pega o id do documento para inserir em usuario
+                $DocumentoID = $conexao->lastInsertId();
+                //Consulta para inserir usuario
+                $sql ="INSERT INTO `usuarios` (`Nome`, `Email`, `Telefone`, `Provincia`, `Municipio`, `Bairro`,`Permissao`, `DocumentoID`) VALUES (:nome,:email, :telefone, :provincia, :municipio, :bairro,:permissao, :documentoID)";
+                //Preparar a consulta
+                $preparar_inserir_cliente_usuario = $conexao->prepare($sql);
+                if ($preparar_inserir_cliente_usuario==false) {
+                    $_SESSION['msg_cliente']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+                        Erro na Preparação da Consulta! Consulte o Admin do Sistema. 
+                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                    </div>";
+                    header("location:../cliente.php");
+                }
+                //vincular os parametros
+                $preparar_inserir_cliente_usuario->bindParam(':nome',$Nome,PDO::PARAM_STR);
+                $preparar_inserir_cliente_usuario->bindParam(':telefone',$Telefone,PDO::PARAM_STR);
+                $preparar_inserir_cliente_usuario->bindParam(':provincia',$Provincia,PDO::PARAM_STR);
+                $preparar_inserir_cliente_usuario->bindParam(':municipio',$Municipio,PDO::PARAM_STR);
+                $preparar_inserir_cliente_usuario->bindParam(':email',$Email,PDO::PARAM_STR);
+                $preparar_inserir_cliente_usuario->bindParam(':bairro',$Bairro,PDO::PARAM_STR);
+                $preparar_inserir_cliente_usuario->bindParam(':documentoID',$DocumentoID,PDO::PARAM_INT);
+                $preparar_inserir_cliente_usuario->bindParam(':permissao',$Permissao,PDO::PARAM_STR);
+
+                //Executar a consulta
+                if ($preparar_inserir_cliente_usuario->execute()) {
+                    
+                    $UsuarioID = $conexao->lastInsertId();
+                    //Adicionar dados na tabela Cliente
+                    $sql ="INSERT INTO `clientes` (`UsuarioID`) VALUES (:usuarioID)";
+                    //Preparar a consulta
+                    $preparar_inserir_cliente = $conexao->prepare($sql);
+                    if ($preparar_inserir_cliente==false) {
+                        $_SESSION['msg_cliente']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+                            Erro na Preparação da Consulta! Consulte o Admin do Sistema.
+                        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                        </div>";
+                        header("location:../cliente.php");
+                    }
+                    //vincular os parametros
+                    $preparar_inserir_cliente->bindParam(':usuarioID',$UsuarioID,PDO::PARAM_INT);
+
+                    //Executar a consulta
+                    if ($preparar_inserir_cliente->execute()) {
+                        $_SESSION['msg_cliente']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
+                            Cliente Cadastrado com Sucesso.
+                        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                        </div>";
+                        header("location:../cliente.php");
+                    }else {
+                        $_SESSION['msg_cliente']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                            Erro ao Cadastrar Cliente!
+                        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                        </div>";
+                        header("location:../cliente.php");
+                    } 
+                }else {
+                    $_SESSION['msg_cliente']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                        Erro ao Cadastrar Cliente!
+                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                    </div>";
+                    header("location:../cliente.php");
+                }    
+                    
             }else {
-                $_SESSION['msg']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-                Erro ao Cadastrar Usuário!
+                $_SESSION['msg_cliente']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                    Erro ao Cadastrar Cliente!
                 <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
                 </div>";
                 header("location:../cliente.php");
             }
         
-            //Obter ID de usuario
-            $usuarioID = mysqli_insert_id($conexao);
-            //Consulta para inserir Motorista
-            $sql ="INSERT INTO `clientes` (`Nome`,`Telefone`, `Endereco`,`NumDocumento`,`Documento`, `CartaConducao`,`UsuarioID`) VALUES (?,?,?,?,?,?,?)";
-            //Preparar a consulta
-            $preparar = mysqli_prepare($conexao,$sql);
-            if ($preparar==false) {
-                $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-                Erro na Preparação da Consulta!
-                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                </div>";
-                header("location:../cliente.php");
-            }
-            //vincular os parametros
-            mysqli_stmt_bind_param($preparar,"sissssi",$Nome,$Telefone,$Endereco,$NumDocumento,$Documento,$CartaConducao,$usuarioID);
-
-            //Executar a consulta
-            if (mysqli_stmt_execute($preparar)) {
-                $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-                Cliente Cadastrado com Sucesso.
-                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                </div>";
-                header("location:../cliente.php");
-            }else {
-                $_SESSION['msg']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-                Erro ao Cadastrar Cliente!
-                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                </div>";
-                header("location:../cliente.php");
-            }
-             
         } 
     }    
 }
 //Fechar a e consulta e a conexao
-mysqli_stmt_close($preparar);
-mysqli_close($conexao);
+$preparar_inserir_cliente->close();
+$preparar_inserir_cliente->close();
 ?>

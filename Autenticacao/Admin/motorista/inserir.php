@@ -1,188 +1,181 @@
 
 <?php 
-include_once '../../config_db.php';//inclui a base de dados
+include_once '../../credencias/config_db.php';//inclui a base de dados
 session_start();//Sessão iniciada
 ob_start();
 
 //Verficar o metodo que trás os dados
-if (isset($_POST['add'])) {
-  $Nome =  mysqli_escape_string($conexao,$_POST['nome']);
-  $CartaConducao =  mysqli_escape_string($conexao,$_POST['cartaConducao']);
-  $Telefone =  mysqli_escape_string($conexao,$_POST['telefone']);
-  $Endereco =  mysqli_escape_string($conexao,$_POST['endereco']);
-  $EstadoMotorista = 'Activo';
-  $Imagem = $_FILES['imagem'];
+if (isset($_POST['add_func'])) {
+  $PrimeiroNome =  strip_tags($_POST['nome']);
+  $sobreNome =  strip_tags($_POST['sobreNome']);
+  $Nome= $PrimeiroNome ." ". $sobreNome; 
+  $provincia =  strip_tags($_POST['provincia']);
+  $municipio =  strip_tags($_POST['municipio']);
+  $bairro =  strip_tags($_POST['bairro']);
+  $telefone =  strip_tags($_POST['telefone']);
+  //Dados do Documento
+  $Documento =  strip_tags($_POST['documento']);
+  $numDocumento=  strip_tags($_POST['numDocumento']);
+  $DataValidade =  strip_tags($_POST['dataValidade']);
+  $FileDoc =  'Copia do Bi';
+  $SituacaoD =  1;
+  //Dados Motorista
+  $Permissao="Motorista";
+  $SituacaoMotorista =  strip_tags($_POST['situacaoMotorista']);
+  $Imagem= "Fotografia";
 
-  //Dado de Usuario
-  $email =  mysqli_escape_string($conexao,$_POST['email']);
-  $senha =  mysqli_escape_string($conexao,$_POST['senha']);
-  $senha = password_hash($senha,PASSWORD_DEFAULT);
-  $Permissao = 'Motorista';
-  $EstadoUsuario = 'Activo';
-
-    if(empty($Nome)){
-      $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Digite o seu Nome!
+    if(empty($PrimeiroNome)){
+      $_SESSION['msg_motorista']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+        Digite o Nome!
       <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
       </div>";
       header("location:../motorista.php");
-    }elseif(empty($CartaConducao)){
-        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Insira o Nº da Carta de Condução!
+    }elseif(empty($sobreNome)){
+        $_SESSION['msg_motorista']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+        Digite o Sobrenome!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../motorista.php");
-    }elseif(empty($Telefone)){
-        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Insira o Seu Número de Telefone!
+    }elseif(empty($Documento)){
+        $_SESSION['msg_motorista']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+            Seleciona o Documento!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../motorista.php");
-    }elseif(empty($Endereco)){
-        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Digite o seu Endereço
+    }elseif(empty($Permissao)){
+        $_SESSION['msg_motorista']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+            Seleciona a Permissão de Acesso!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../motorista.php");
-    }elseif(empty($email)){
-        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Digite o seu Endereço de Email!
+    }elseif(empty($numDocumento)){
+        $_SESSION['msg_motorista']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+            Insira o Número do Documento.
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../motorista.php");
-    }elseif(empty($senha)){
-        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-        Inisira a Sua Senha!
+    }elseif(empty($DataValidade)){
+        $_SESSION['msg_motorista']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+            Insira a Data de validade!
         <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../motorista.php");
     }else{
         //verificar se existe um veiculo com este nome
-        $sql="SELECT m.Nome FROM motoristas m inner join usuarios u on m.UsuarioID = u.UsuarioID WHERE EstadoUsuario = 'Activo'";
-        $query = mysqli_query($conexao,$sql);
-        $dados=mysqli_fetch_array($query);
-        $NomeAnterior = $dados['Nome'];
-
-        if($Nome == "$NomeAnterior"){
-            $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-            Este Motorista já está Cadastrado!
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-            </div>";
-            header("location:../motorista.php");
+        $sql="SELECT dm.NumDocumento FROM usuarios us inner join documentos dm on us.DocumentoID=dm.DocumentoID WHERE dm.NumDocumento =:numDocumento";
+        $prepare_verificar_func = $conexao->prepare($sql);
+        $prepare_verificar_func->bindParam(':numDocumento',$numDocumento, PDO::PARAM_STR);
+        $prepare_verificar_func->execute();
+        
+        if($prepare_verificar_func->rowCount()){
+        $_SESSION['msg_motorista']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+            Este Usuário Já existe!
+        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+        </div>";
+        header("location:../motorista.php");
         }else{
-            if (empty($Imagem)) {
-                $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-                Insira a Imagem do Veículo!
+            
+            //Consulta para inserir Documento
+            $sql ="INSERT INTO `documentos` (`Documento`, `FileDoc`, `NumDocumento`, `dataValidade`, `SituacaoDoc`) VALUES (:documento,:fileDoc,:numDocumento,:dataValidade,:situacaoDoc)";
+            //Preparar a consulta
+            $preparar_inserir_doc = $conexao->prepare($sql);
+            if ($preparar_inserir_doc ==false) {
+                $_SESSION['msg_motorista']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+                Erro na Preparação da Consulta!
                 <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
                 </div>";
                 header("location:../motorista.php");
-            }else {
-                // Verifica se não houve erro durante o upload
-                if ($Imagem['error'] === 0) {
-
-                    // Verifica se o tamanho do arquivo
-                    if($Imagem ['size'] > 200000) {
-                    
-                        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-                        Imagem muito grande!
-                        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                        </div>";
-                        header('location:../motorista.php');
-                    }
-                    
-                    // Move o arquivo para um diretório de destino
-                    $caminhoDestino = '../../imagens/usuarios/' . $Imagem['name'];
-                    move_uploaded_file($Imagem['tmp_name'], $caminhoDestino);
-                    
-                    // Verifica se o arquivo é uma imagem válida
-                    $extensao = strtolower(pathinfo($caminhoDestino, PATHINFO_EXTENSION));
-                    $tiposPermitidos = array('jpg', 'jpeg', 'png');
-                    if (!in_array($extensao, $tiposPermitidos)) {
-                        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-                        Formato de arquivo inválido. Apenas imagens JPG, JPEG e PNG são permitidas!
-                        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                        </div>";
-                        header('location: ../motorista.php');
-                    
-                        // Verifica se o arquivo existe na pasta de destino
-                        if (!file_exists($caminhoDestino)) {
-                            header('location: ../motorista.php');
-                            $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-                            Erro ao mover o arquivo para a pasta de destino!
-                            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                            </div>";
-
-                        }
-                    }
-                        
-                    // Salva as informações da imagem no banco de dados
-                    $Imagem = $Imagem['name'];
-
-                    //Consulta para inserir marcacao de Aluguer
-                    $sql ="INSERT INTO `usuarios` (`Email`,`Senha`, `Permissao`, `EstadoUsuario`) VALUES (?,?,?,?)";
-                    //Preparar a consulta
-                    $preparar = mysqli_prepare($conexao,$sql);
-                    if ($preparar==false) {
-                        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-                        Erro na Preparação da Consulta!
-                        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                        </div>";
-                        header("location:../motorista.php");
-                    }
-                    //vincular os parametros
-                    mysqli_stmt_bind_param($preparar,"ssss",$email,$senha,$Permissao,$EstadoUsuario);
-
-                    //Executar a consulta
-                    if (mysqli_stmt_execute($preparar)) {
-                        $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-                        Usuário Cadastrado com Sucesso.
-                        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                        </div>";
-                        header("location:../motorista.php");
-                    }else {
-                        $_SESSION['msg']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-                        Erro ao Cadastrar Usuário!
-                        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                        </div>";
-                        header("location:../motorista.php");
-                    }
-                
-                    //Obter ID de usuario
-                    $usuarioID = mysqli_insert_id($conexao);
-                    //Consulta para inserir Motorista
-                    $sql ="INSERT INTO `motoristas` (Imagem,`Nome`,`CartaConducao`, `Telefone`, `Endereco`,`EstadoMotorista`,`UsuarioID`) VALUES (?,?,?,?,?,?,?)";
-                    //Preparar a consulta
-                    $preparar = mysqli_prepare($conexao,$sql);
-                    if ($preparar==false) {
-                        $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-                        Erro na Preparação da Consulta!
-                        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                        </div>";
-                        header("location:../motorista.php");
-                    }
-                    //vincular os parametros
-                    mysqli_stmt_bind_param($preparar,"sssissi",$Imagem,$Nome,$CartaConducao,$Telefone,$Endereco,$EstadoMotorista,$usuarioID);
-
-                    //Executar a consulta
-                    if (mysqli_stmt_execute($preparar)) {
-                        $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-                        Motorista Cadastrado com Sucesso.
-                        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                        </div>";
-                        header("location:../motorista.php");
-                    }else {
-                        $_SESSION['msg']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
-                        Erro ao Cadastrar Motorista!
-                        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                        </div>";
-                        header("location:../motorista.php");
-                    }
-                }
             }
+            
+            //vincular os parametros
+            $preparar_inserir_doc->bindParam(':documento',$Documento,PDO::PARAM_STR);
+            $preparar_inserir_doc->bindParam(':fileDoc',$FileDoc,PDO::PARAM_STR);
+            $preparar_inserir_doc->bindParam(':numDocumento',$numDocumento,PDO::PARAM_STR);
+            $preparar_inserir_doc->bindParam(':dataValidade',$DataValidade,PDO::PARAM_STR);
+            $preparar_inserir_doc->bindParam(':situacaoDoc',$SituacaoD,PDO::PARAM_INT);
+            $preparar_inserir_doc->execute();
+            //Executar a consulta
+            if ($preparar_inserir_doc->rowCount()) {
+                //Pega o id do documento para inserir em usuario
+                $DocumentoID = $conexao->lastInsertId();
+            //Cadastrar Usuario
+            $sql ="INSERT INTO `usuarios` (`Nome`, `Telefone`, `Provincia`, `Municipio`, `Bairro`,`Permissao`, `DocumentoID`) VALUES (:nome, :telefone, :provincia, :municipio, :bairro,:permissao, :documentoID)";
+            //Preparar a consulta
+            $preparar_inserir_func = $conexao->prepare($sql);
+            if ($preparar_inserir_func==false) {
+                $_SESSION['msg_motorista']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+                Erro na Preparação da Consulta!
+                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                </div>";
+                header("location:../motorista.php");
+            }
+            //vincular os parametros
+            $preparar_inserir_func->bindParam(':nome',$Nome,PDO::PARAM_STR);
+            $preparar_inserir_func->bindParam(':provincia',$provincia, PDO::PARAM_STR);
+            $preparar_inserir_func->bindParam(':municipio',$municipio, PDO::PARAM_STR);
+            $preparar_inserir_func->bindParam(':bairro',$bairro, PDO::PARAM_STR);
+            $preparar_inserir_func->bindParam(':telefone',$telefone, PDO::PARAM_STR);
+            $preparar_inserir_func->bindParam(':documentoID',$DocumentoID, PDO::PARAM_INT);
+            $preparar_inserir_func->bindParam(':permissao',$Permissao, PDO::PARAM_STR);
+            $preparar_inserir_func->execute();
+            //Executar a consulta
+            if ($preparar_inserir_func->rowCount()) {
+                $_SESSION['msg_motorista']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
+                    Funcionário Cadastrado com Sucesso.
+                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                </div>";
+                header("location:../motorista.php");
+                //Fim Cadastrar Usuario
+
+                //Cadastrar Motorista
+                $UsuarioID = $conexao->lastInsertId();
+                $sql ="INSERT INTO `motoristas` (`Imagem`,`SituacaoMotorista`,`UsuarioID`) VALUES (:imagem,:situacaoMotorista, :usuarioID)";
+                //Preparar a consulta
+                $preparar_inserir_motorista = $conexao->prepare($sql);
+                if ($preparar_inserir_motorista==false) {
+                    $_SESSION['msg_motorista']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+                    Erro na Preparação da Consulta!
+                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                    </div>";
+                    header("location:../motorista.php");
+                }
+                //vincular os parametros
+                $preparar_inserir_motorista->bindParam(':imagem',$Imagem,PDO::PARAM_STR);
+                $preparar_inserir_motorista->bindParam(':situacaoMotorista',$SituacaoMotorista, PDO::PARAM_STR);
+                $preparar_inserir_motorista->bindParam(':usuarioID',$UsuarioID, PDO::PARAM_INT);
+                $preparar_inserir_motorista->execute();
+                //Executar a consulta
+                if ($preparar_inserir_motorista->rowCount()) {
+                    $_SESSION['msg_motorista']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
+                        Motorista Cadastrado com Sucesso.
+                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                    </div>";
+                    header("location:../motorista.php");
+                }else {
+                    $_SESSION['msg_motorista']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                        Erro ao Cadastrar Motorista!
+                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                    </div>";
+                    header("location:../motorista.php");
+                }
+                //FIm cadastrar motorista
+            }else {
+                $_SESSION['msg_motorista']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                    Erro ao Cadastrar Usuário!
+                <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                </div>";
+                header("location:../motorista.php");
+            }
+        }else {
+            $_SESSION['msg_motorista']="<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+                Erro ao Cadastrar Documento!
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>";
+            header("location:../motorista.php");
+        }
+            
         } 
     }    
 }
-//Fechar a e consulta e a conexao
-mysqli_stmt_close($preparar);
-mysqli_close($conexao);
+
 ?>

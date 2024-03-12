@@ -1,53 +1,71 @@
 
 <?php
 //Conexão com o banco de dados
-include_once '../../config_db.php';
+include_once '../../credencias/config_db.php';
 //Inicar Sessão
 session_start();
 ob_start();
 
-//Mudar Disponibilidade do veiculo
+//Mudar Situacao do Usuario
+if (isset($_GET['id'])) {
 
-if (isset($_GET['Disponivel']) && isset($_GET['id'])) {
-    $UsuarioID = $_GET['id'];
-    $Disponivel = $_GET['Disponivel'];// verifica o valor da Url(Não)
+    $UsuarioID = filter_input(INPUT_GET,'id',FILTER_SANITIZE_NUMBER_INT);
+    $sql="SELECT Situacao,Permissao FROM usuarios WHERE UsuarioID=:usuarioID";
+    $prepare_verificacao= $conexao->prepare($sql);
+    $prepare_verificacao->bindParam(':usuarioID',$UsuarioID,PDO::PARAM_INT);
+    $prepare_verificacao->execute();
+    $resultado= $prepare_verificacao->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($resultado as $dados) {
+      $Situacao_db = $dados['Situacao'];
+      $Permissao_db = $dados['Permissao'];
+    }
 
-    if ($Disponivel == 'Inactivo') {
-        $DisponivelUsuario = 'Activo';//Disponivel = Activo/ indiponivel = Inactivo
+    if ($Situacao_db == 'Inactivo') {
+        $Situacao = 'Activo';//Disponivel = Activo/ indiponivel = Inactivo
     }else{
-        $DisponivelUsuario = 'Inactivo';//Disponivel = Activo/ indiponivel = Inactivo
-        }
-        //Consulta para apagar registo de aluguer
-        $sql="UPDATE `usuarios` SET `EstadoUsuario` = ? WHERE `usuarios`.`UsuarioID` = ?";
-        //Preparar a consulta
-        $preparar=mysqli_prepare($conexao,$sql);
-        if ($preparar==false) {
-            $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
-            Erro na Preparação da Consulta!
-            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+        $Situacao = 'Inactivo';//Disponivel = Activo/ indiponivel = Inactivo
+    }
+    if ($Permissao_db == "Administrador") {
+        $_SESSION['msg_usuario']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+            Não Pode Alterar a Situação do Administrador.
+        <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
         </div>";
         header("location:../cliente.php");
+    }else {
+        
+        //Consulta para apagar registo de aluguer
+        $sql="UPDATE `usuarios` SET `Situacao` =:situacao WHERE `usuarios`.`UsuarioID` =:usuarioID";
+        //Preparar a consulta
+        $preparar=$conexao->prepare($sql);
+        if ($preparar==false) {
+            $_SESSION['msg_usuario']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+            Erro na Preparação da Consulta, Consulte o Admin do Sistema.
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>";
+            header("location:../cliente.php");
         }
         //VInvular os parametros
-        mysqli_stmt_bind_param($preparar,"si",$DisponivelUsuario,$UsuarioID);
+        $preparar->bindParam(':situacao',$Situacao,PDO::PARAM_STR);
+        $preparar->bindParam(':usuarioID',$UsuarioID,PDO::PARAM_INT);
         //Exeucutar a preparação 
-        if (mysqli_stmt_execute($preparar)) {
+        if ($preparar->execute()) {
             //mensagem de sucesso
-            $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-            Situação Actualizada
+            $_SESSION['msg_usuario']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
+            Situação do Usuário Actualizada com Sucesso.
             <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-        </div>";
-        header('location:../cliente.php');
+            </div>";
+            header('location:../cliente.php');
         }else {
             //mensagem de sucesso de erro
-            $_SESSION['msg']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-            Erro: Situação Não Actualizada
+            $_SESSION['msg_usuario']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
+                Erro ao Actualizar a Situação do Usuário.
             <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-        </div>";
-        header('../cliente.php');
+            </div>";
+            header('../cliente.php');
         }
-   
+    }
 }
+
 //Fechar a e consulta e a conexao
-mysqli_stmt_close($preparar);
-mysqli_close($conexao);
+$preparar->close();
+$conexao->close();

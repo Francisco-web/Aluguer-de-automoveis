@@ -73,14 +73,14 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                       //Pesquisar carro
                       if(!empty($_GET['pesquisar'])) {
                         $dados = $_GET['pesquisar'];
-                        $EstadoCarro ="Apagado";
-                        $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros WHERE estadoCarro != '$EstadoCarro' and Modelo like '%$dados%' ORDER BY Modelo LIMIT $inicio, $qnt_result_pg";
+                        $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros WHERE Modelo like '%$dados%' ORDER BY Modelo LIMIT $inicio, $qnt_result_pg";
                       }else {
-                        $EstadoCarro ="Apagado";
-                        $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros WHERE estadoCarro != '$EstadoCarro' ORDER BY Modelo LIMIT $inicio, $qnt_result_pg";
+                        $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros ORDER BY Modelo LIMIT $inicio, $qnt_result_pg";
                       }
-                      $query = mysqli_query($conexao,$sql);
-                      while ($dados=mysqli_fetch_array($query)) :
+                      $prepare_consultar_veiculo = $conexao->prepare($sql);
+                      $prepare_consultar_veiculo->execute();
+                      $resultado = $prepare_consultar_veiculo->fetchAll(PDO::FETCH_ASSOC);
+                      foreach ($resultado as $dados){
                         $CarroID = $dados['CarroID'];  
                         $Imagem = $dados['Imagem'];
                         $Modelo = $dados['Modelo'];
@@ -111,12 +111,13 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                         </td>
                       </tr>
                     </tbody>
-                    <?php endwhile;
+                    <?php };
                       //Somar todos os registros 
                       $EstadoCarro ="Apagado";
-                      $result_pg="SELECT Count(CarroID) as NumID FROM carros WHERE estadoCarro != '$EstadoCarro' ORDER BY Modelo";
-                      $resultado_pg = mysqli_query($conexao, $result_pg);
-                      $row_pg = mysqli_fetch_assoc($resultado_pg);
+                      $result_pg="SELECT Count(CarroID) as NumID FROM carros ORDER BY Modelo";
+                      $resultado_pg = $conexao->prepare($result_pg);
+                      $resultado_pg->execute();
+                      $row_pg = $resultado_pg->fetch();
                       //echo $row_pg['num_result'];
                       //Quantidade de pagina 
                       $quantidade_pg = ceil($row_pg['NumID'] / $qnt_result_pg);

@@ -13,6 +13,4 @@ try{
     echo"Falha ao Conectar com o Banco de dados:{$erro->getMessage()}";
     $conexao = null;
 }
-$SENHA = 123456;
-echo "".password_hash($SENHA,PASSWORD_DEFAULT)."";
 ?>  

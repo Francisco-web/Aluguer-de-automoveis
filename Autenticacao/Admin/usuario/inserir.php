@@ -48,8 +48,13 @@ if (isset($_POST['add'])) {
             $Permissao_db = $dados['email'];
             $Senha_db = $dados['email'];
         }
-        
-        if($Email_db != null || $Permissao_db != null || $senha_db !=null){
+        if (!$prepare_con->rowCount()) {
+            $_SESSION['msg_usuario']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
+                Este Funcionário Não Existe!
+            <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+            </div>";
+            header("location:../usuario.php");
+        }elseif($Email_db != null || $Permissao_db != null || $senha_db !=null){
             $_SESSION['msg_usuario']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
             Este Usuário já Existe!
             <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>

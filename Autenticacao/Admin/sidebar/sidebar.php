@@ -80,7 +80,7 @@
       </li><!-- End Icons Nav -->
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#icon-nav-usuario" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-person"></i><span>Usuário</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-person"></i><span>Nivel de Acesso</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="icon-nav-usuario" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>

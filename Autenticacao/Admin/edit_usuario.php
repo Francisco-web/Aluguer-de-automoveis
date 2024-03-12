@@ -11,9 +11,9 @@ include_once 'sidebar/sidebar.php';
  
 //-- ======= Consulta ao anco de Dados ======= -->
 if (isset($_GET['id'])) {
-  $id = 1;
+  $id = filter_input(INPUT_GET,'id', FILTER_SANITIZE_NUMBER_INT);
   //Consulta no banco para mostar os dados do motorista
-  $sql="SELECT UsuarioID,Permissao,Situacao,Email,Senha FROM usuarios WHERE UsuarioID=$id limit 1";
+  $sql="SELECT UsuarioID,Permissao,Situacao,Email,Senha,Nome FROM usuarios WHERE UsuarioID=$id limit 1";
   $prepare = $conexao->prepare($sql);
   $prepare->execute();
   $resultado=$prepare->fetchAll(PDO::FETCH_ASSOC);
@@ -23,6 +23,7 @@ if (isset($_GET['id'])) {
     $Email = $dados['Email'];
     $Senha = $dados['Senha'];
     $Permissao = $dados['Permissao'];
+    $Nome = $dados['Nome'];
   }
   
 }
@@ -66,7 +67,9 @@ if (isset($_GET['id'])) {
                         <form class="row g-3" method="POST" action="usuario/alterar.php">
                           
                           <input type="hidden" class="form-control" value="<?php echo $id;?>" name="UsuarioID">
-                          
+                          <div class="col-6">
+                            <input type="text" class="form-control" name="nome" placeholder="Nome" autocomplete="off" value="<?php echo $Nome;?>" >
+                          </div>
                           <div class="col-6">
                             <input type="email" class="form-control" name="email" placeholder="Email" autocomplete="off" value="<?php echo $Email;?>" required>
                           </div>
@@ -82,10 +85,27 @@ if (isset($_GET['id'])) {
                               <option value="Recepcionista" <?php if ($Permissao=="Recepcionista") {
                                 echo "Selected";
                               }?> >Recepcionista</option>
+                              <option value="Cliente" <?php if ($Permissao=="Cliente") {
+                                echo "Selected";
+                              }?> >Cliente</option>
+                              <option value="Motorista" <?php if ($Permissao=="Motorista") {
+                                echo "Selected";
+                              }?> >Motorista</option>
+                            </select>
+                          </div>
+                          <div class="col-md-6">
+                            <select name="situacao" id="" class="form-control" required>
+                              <option value="">Situação</option>
+                              <option value="Activo"<?php if ($Situacao =="Activo") {
+                                echo "Selected";
+                              }?>>Activo</option>
+                              <option value="Inactivo"<?php if ($Situacao=="Inactivo") {
+                                echo "Selected";
+                              }?>>Inactivo</option>
                             </select>
                           </div>
                           <div class="text-center">
-                            <button type="submit" name="cancelar" class="btn btn-secondary" >Cancelar</button>
+                            <a href="usuario.php" class="btn btn-secondary" >Cancelar</a>
                             <button type="submit" name="actualizar" class="btn btn-primary">Actualizar</button>
                           </div>
                         </form>

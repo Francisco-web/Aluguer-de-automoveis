@@ -1,5 +1,5 @@
 <?php
-$tituloPagina ="Usuários Cadastrados";
+$tituloPagina ="Nivel de Acesso";
 // ======= Head ======= -->
 include_once 'head/head.php';
 
@@ -51,7 +51,6 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
               <div class="card recent-sales overflow-auto">
 
                 <div class="card-title">
-                  <a class="btn btn btn-primary" data-bs-toggle="modal" data-bs-target="#largeModal" href="#" ><i class="bi bi-plus"></i>Novo</a>
                 </div>
 
                 <div class="card-body">
@@ -61,7 +60,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                     <thead>
                       <tr>
                         <th scope="col">ID</th>
-                        <th scope="col">Nome</th>
+                        <th scope="col">Usuário</th>
                         <th scope="col">Email</th>
                         <th scope="col">Permissão</th>
                         <th scope="col">Situação</th>
@@ -69,12 +68,14 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                       </tr>
                     </thead>
                     <?php
+                      $Permissao_nula = " ";//permisão nula mostra todos os usuario com sua permissao
                       //Pesquisar carro
                       if(!empty($_GET['pesquisar'])) {
                         $dados = $_GET['pesquisar'];
-                        $sql="SELECT UsuarioID,Permissao,SituacaoUsuario,Nome,Email FROM usuarios WHERE Nome like '%$dados%' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
+                        
+                        $sql="SELECT UsuarioID,Permissao,SituacaoUsuario,Nome,Email FROM usuarios WHERE Nome like '%$dados%' and Permissao != '$Permissao_nula' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }else {
-                        $sql="SELECT UsuarioID,Situacao,Permissao,Nome,Email FROM usuarios ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
+                        $sql="SELECT UsuarioID,Situacao,Permissao,Nome,Email FROM usuarios WHERE Permissao != '$Permissao_nula' ORDER BY Nome LIMIT $inicio, $qnt_result_pg";
                       }
                       $prepare_func = $conexao->prepare($sql);
                       $prepare_func->execute();
@@ -182,6 +183,7 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                       <option value="">Permissão</option>
                       <option value="Administrador">Administrador</option>
                       <option value="Recepcionista">Recepcionista</option>
+                      <option value="Cliente">Cliente</option>
                     </select>
                   </div>
                   <div class="col-md-6">
