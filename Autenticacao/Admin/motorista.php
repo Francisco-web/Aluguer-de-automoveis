@@ -126,7 +126,6 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                       $quantidade_pg = ceil($row_pg['NumID'] / $qnt_result_pg);
                     ?>
                   </table>
-
                 </div>
                 <!--paginação start-->
                 <section class="panel">
