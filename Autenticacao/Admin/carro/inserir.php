@@ -6,15 +6,15 @@ ob_start();
 
 //Verficar o metodo que trás os dados
 if (isset($_POST['add'])) {
-  $Modelo = $_POST['modelo'];
-  $Ano = $_POST['ano'];
-  $Placa = $_POST['placa'];
-  $ValorDiario = $_POST['valorDiario'];
-  $Lugar = $_POST['lugar'];
-  $Bagageira = $_POST['bagageira'];
-  $Conforto = $_POST['conforto'];
-  $Porta = $_POST['porta'];
-  $MotorSeguranca = $_POST['motorSeguranca'];
+  $Modelo = strip_tags($_POST['modelo']);
+  $Ano = strip_tags($_POST['ano']);
+  $Placa = strip_tags($_POST['placa']);
+  $ValorDiario = strip_tags($_POST['valorDiario']);
+  $Lugar = strip_tags($_POST['lugar']);
+  $Bagageira = strip_tags($_POST['bagageira']);
+  $Conforto = strip_tags($_POST['conforto']);
+  $Porta = strip_tags($_POST['porta']);
+  $MotorSeguranca = strip_tags($_POST['motorSeguranca']);
   $Disponivel = 1;
   $Imagem = $_FILES['imagem'];
 
@@ -121,8 +121,14 @@ if (isset($_POST['add'])) {
                     $preparar_inserir_veiculo->bindParam(":imagem",$Imagem,PDO::PARAM_STR);
                     $preparar_inserir_veiculo->bindParam(":modelo",$Modelo,PDO::PARAM_STR);
                     $preparar_inserir_veiculo->bindParam(":ano",$Ano,PDO::PARAM_INT);
-                    $preparar_inserir_veiculo->bindParam(":placa",$Placa,PDO::PARAM_STR);$preparar_inserir_veiculo->bindParam(":lugar",$Lugar,PDO::PARAM_INT);$preparar_inserir_veiculo->bindParam(":porta",$Porta,PDO::PARAM_INT);$preparar_inserir_veiculo->bindParam(":bagageira",$Bagageira,PDO::PARAM_STR);$preparar_inserir_veiculo->bindParam(":motorSeguranca",$MotorSeguranca,PDO::PARAM_STR);
-                    $preparar_inserir_veiculo->bindParam(":conforto",$Conforto,PDO::PARAM_STR);$preparar_inserir_veiculo->bindParam(":disponivel",$Disponivel,PDO::PARAM_INT);$preparar_inserir_veiculo->bindParam(":valorDiario",$ValorDiario,PDO_PARAM_INT);
+                    $preparar_inserir_veiculo->bindParam(":placa",$Placa,PDO::PARAM_STR);
+                    $preparar_inserir_veiculo->bindParam(":lugar",$Lugar,PDO::PARAM_INT);
+                    $preparar_inserir_veiculo->bindParam(":porta",$Porta,PDO::PARAM_INT);
+                    $preparar_inserir_veiculo->bindParam(":bagageira",$Bagageira,PDO::PARAM_STR);
+                    $preparar_inserir_veiculo->bindParam(":motorSeguranca",$MotorSeguranca,PDO::PARAM_STR);
+                    $preparar_inserir_veiculo->bindParam(":conforto",$Conforto,PDO::PARAM_STR);
+                    $preparar_inserir_veiculo->bindParam(":disponivel",$Disponivel,PDO::PARAM_INT);
+                    $preparar_inserir_veiculo->bindParam(":valorDiario",$ValorDiario,PDO::PARAM_INT);
 
                     //Executar a consulta
                     if ($preparar_inserir_veiculo->execute()) {

@@ -9,12 +9,12 @@ if(isset($_POST['cancelar'])){
 }
 //Verficar o metodo que trás os dados
 if (isset($_POST['actualizar'])) {
-  $Modelo = mysqli_escape_string($conexao,$_POST['modelo']);
-  $Ano = mysqli_escape_string($conexao,$_POST['ano']);
-  $Placa = mysqli_escape_string($conexao,$_POST['placa']);
-  $ValorDiario = mysqli_escape_string($conexao,$_POST['valorDiario']);
-  $Descricao = mysqli_escape_string($conexao,$_POST['descricao']);
-  $CarroID = mysqli_escape_string($conexao,$_POST['CarroID']);
+  $Modelo = strip_tags($conexao,$_POST['modelo']);
+  $Ano = strip_tags($conexao,$_POST['ano']);
+  $Placa = strip_tags($conexao,$_POST['placa']);
+  $ValorDiario = strip_tags($conexao,$_POST['valorDiario']);
+  $Descricao = strip_tags($conexao,$_POST['descricao']);
+  $CarroID = strip_tags($conexao,$_POST['CarroID']);
 
   if(empty($Modelo)){
       $_SESSION['msg']="<div class='alert alert-info alert-dismissible fade show' role='alert'>

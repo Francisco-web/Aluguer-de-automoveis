@@ -39,7 +39,7 @@ if (!isset($_SESSION['UsuarioID']) AND ($_SESSION['Permissao']!='Administrador')
 }
 $UsuarioID_Admin = $_SESSION['UsuarioID'];
 //Dados do Admin
-$sql= "SELECT Nome,Permissao,Situacao,Senha,Email,Provincia,Municipio,Bairro FROM usuarios WHERE UsuarioID =:usuarioID";
+$sql= "SELECT Nome,Permissao,Situacao,Senha,Email,Provincia,Municipio,Bairro,Telefone FROM usuarios WHERE UsuarioID =:usuarioID";
 $prepare_us= $conexao->prepare($sql);
 $prepare_us->bindParam(':usuarioID',$UsuarioID_Admin,PDO::PARAM_STR);
 $prepare_us->execute();

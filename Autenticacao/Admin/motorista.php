@@ -105,7 +105,8 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                         <td><?php echo $SituacaoDoc == 1 ? "Válido":"Inválido";?></td>
                         <td><?php echo $Telefone;?></td>
                         <td><?php echo $Email;?></td>
-                        <td><?php echo $SituacaoMotorista == 'Disponível' ? "<a class='btn btn-secondary'>$SituacaoMotorista</a>":"<a class='btn btn-dark'><i class='bi-undo'></i>$SituacaoMotorista</a>";?></td>
+                        <td><?php echo $SituacaoMotorista == 'Disponível' ? "<a class='btn btn-info' href='motorista/disponivel.php?Situacao=Disponível&id=$UsuarioID'>$SituacaoMotorista</a>":"<a class='btn btn-dark'href='motorista/disponivel.php?Situacao=Indisponível&id=$UsuarioID'><i class='bi-undo'></i>$SituacaoMotorista</a>";?></td>
+
                         <td><?php echo $Situacao == 'Activo' ? "<a class='btn btn-warning' href='motorista/disponivel.php?Disponivel=Activo&id=$UsuarioID'><i class='bi-undo'></i> $Situacao</a>":"<a class='btn btn-dark' href='motorista/disponivel.php?Disponivel=Inactivo&id=$UsuarioID'><i class='bi-undo'></i>$Situacao</a>";?></td>
                         <td> 
                           <div class="btn-group">

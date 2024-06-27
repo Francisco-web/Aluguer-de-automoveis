@@ -187,10 +187,10 @@ $inicio = ($qnt_result_pg * $pagina) - $qnt_result_pg;
                     <input type="text" name="modelo" minlength="3" class="form-control" placeholder="Modelo" autocomplete="off" >
                   </div>
                   <div class="col-md-6">
-                    <input type="number" name="ano" class="form-control" minlength="" placeholder="Ano" autocomplete="off" >
+                    <input type="number" name="ano" class="form-control" minlength="" placeholder="Ano" minlength="4" maxlenth="4" autocomplete="off">
                   </div>
                   <div class="col-md-6">
-                    <input type="text" name="placa" minlength="11" class="form-control" placeholder="Placa" autocomplete="off" >
+                    <input type="text" name="placa" minlength="11" maxlenth="11" class="form-control" placeholder="Placa" autocomplete="off" >
                   </div>
                   <div class="col-6">
                     <input type="number" class="form-control" minlength="4" name="valorDiario" placeholder="Valor Diário" autocomplete="off" >

@@ -13,7 +13,7 @@ include_once 'sidebar/sidebar.php';
 if (isset($_GET['id'])) {
   $id = filter_input(INPUT_GET,'id',FILTER_SANITIZE_NUMBER_INT);
   //Consulta no banco para mostar os dados do motorista
-  $sql="SELECT us.UsuarioID,us.DocumentoID,Telefone,Situacao,Nome,Email,Provincia,Municipio,Bairro,Permissao,dm.Documento,dm.FileDoc,dm.NumDocumento,dm.dataValidade,dm.SituacaoDoc FROM usuarios us inner join documentos dm on us.DocumentoID=dm.DocumentoID WHERE USuarioID = :id LIMIT 1";
+  $sql="SELECT us.UsuarioID,us.DocumentoID,Telefone,Situacao,Nome,Email,Provincia,Municipio,Bairro,Permissao,dm.Documento,dm.FileDoc,dm.NumDocumento,dm.dataValidade,dm.SituacaoDoc FROM usuarios us inner join documentos dm on us.DocumentoID=dm.DocumentoID WHERE UsuarioID = :id LIMIT 1";
   $prepare_edit_func = $conexao->prepare($sql);
   $prepare_edit_func->bindParam(':id',$id,PDO::PARAM_INT);
   $prepare_edit_func->execute();

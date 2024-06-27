@@ -22,13 +22,13 @@ if (isset($_GET['id'])) {
       Não Pode Apagar um Usuário Activo!
     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
     </div>";
-    header("location:../funcionario.php");
+    header("location:../motorista.php");
   }elseif ($Permissao_db == "Administrador") {
     $_SESSION['msg_func']="<div class='alert alert-info alert-dismissible fade show' role='alert'>
       Não Pode Apagar um Usuário Administrador!
     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
     </div>";
-    header("location:../funcionario.php");
+    header("location:../motorista.php");
   }
   //Mudar o Estado do Usuario
   $sql="DELETE FROM `usuarios` WHERE `usuarios`.`UsuarioID` =:usuarioID";
@@ -39,7 +39,7 @@ if (isset($_GET['id'])) {
       Erro na Preparação da Consulta, Consulte o Admin do Sistema!
       <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
     </div>";
-    header("location:../funcionario.php");
+    header("location:../motorista.php");
   }
   //VInvular os parametros
   $preparar_apagar_usuario->bindParam(':usuarioID',$UsuarioID,PDO::PARAM_INT);
@@ -47,17 +47,17 @@ if (isset($_GET['id'])) {
   if ($preparar_apagar_usuario->execute()) {
     //mensagem de sucesso
     $_SESSION['msg_func']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-      Funcionário Apagado.
+      Motorista Apagado.
     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
     </div>";
-    header('location:../funcionario.php');
+    header('location:../motorista.php');
   }else {
     //mensagem de sucesso de erro
     $_SESSION['msg_func']="<div class='alert alert-success alert-dismissible fade show' role='alert'>
-      Erro ao Apagar Funcionário!
+      Erro ao Apagar Motorista!
     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
     </div>";
-    header('../funcionario.php');
+    header('../motorista.php');
   }
 }
 

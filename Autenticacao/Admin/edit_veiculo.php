@@ -8,26 +8,38 @@ include_once 'header/header.php';
 
 //-- ======= Sidebar ======= -->
 include_once 'sidebar/sidebar.php';
- 
+
 //-- ======= Consulta ao anco de Dados ======= -->
 if (isset($_GET['id'])) {
-  $id = mysqli_escape_string($conexao,$_GET['id']);
-  //Consulta no banco para listar os itens do aluguer
-  $sql="SELECT CarroID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira FROM carros WHERE CarroID = $id ORDER BY Modelo";
-  $query = mysqli_query($conexao,$sql);
-  $dados=mysqli_fetch_array($query);
-  $CarroID = $dados['CarroID'];  
-  $Imagem = $dados['Imagem'];
-  $Modelo = $dados['Modelo'];
-  $Ano = $dados['Ano'];
-  $Placa = $dados['Placa'];
-  $Diponivel = $dados['Disponivel'];
-  $ValorDiaria = $dados['ValorDiaria'];
-  $Lugar = $dados['Lugar'];
-  $Bagageira = $dados['Bagageira'];
-  $Conforto = $dados['Conforto'];
-  $Porta = $dados['Porta'];
-  $MotorSeguranca = $dados['MotorSeguranca'];
+  $id = filter_input(INPUT_GET,'id',FILTER_SANITIZE_NUMBER_INT);
+  //Consulta no banco para mostar os dados do motorista
+  $sql="SELECT car.CarroID,car.DocumentoID,Imagem,Modelo,Ano,Placa,Disponivel,ValorDiaria,MotorSeguranca,Lugar,Porta,Conforto,Bagageira,SituacaoCarro,Documento,FileDoc,NumDocumento,dataValidade,SituacaoDoc FROM carros car inner join documentos dm on car.DocumentoID=dm.DocumentoID WHERE car.CarroID =:carroID ORDER BY Modelo";
+  $prepare_edit_func = $conexao->prepare($sql);
+  $prepare_edit_func->bindParam(':carroID',$id,PDO::PARAM_INT);
+  $prepare_edit_func->execute();
+  $result_edit_func = $prepare_edit_func->fetchAll(PDO::FETCH_ASSOC);
+  foreach($result_edit_func as $dados){
+    //Dados Carro
+    $CarroID = $dados['CarroID'];  
+    $Imagem = $dados['Imagem'];
+    $Modelo = $dados['Modelo'];
+    $Ano = $dados['Ano'];
+    $SituacaoCarro = $dados['SituacaoCarro'];
+    $Placa = $dados['Placa'];
+    $Disponivel = $dados['Disponivel'];
+    $ValorDiaria = $dados['ValorDiaria'];
+    $MotorSeguranca = $dados['MotorSeguranca'];
+    $Lugar = $dados['Lugar'];
+    $Porta = $dados['Porta'];  
+    $Conforto = $dados['Conforto'];
+    $Bagageira = $dados['Bagageira'];
+    //Dados Documento
+    $DocumentoID = $dados['DocumentoID'];
+    $Documento = $dados['Documento'];
+    $FileDoc = $dados['FileDoc'];
+    $NumDocumento = $dados['NumDocumento'];
+    $DataVal = $dados['dataValidade'];
+  }
 }
 ?> 
 
@@ -45,9 +57,9 @@ if (isset($_GET['id'])) {
     </div><!-- End Page Title -->
     <?php
     //SESSAO para mostrar mesagem
-    if (isset($_SESSION['msg'])) {
-        echo $_SESSION['msg'];
-        unset($_SESSION['msg']);
+    if (isset($_SESSION['msg_carro'])) {
+        echo $_SESSION['msg_carro'];
+        unset($_SESSION['msg_carro']);
     }
     ?>
     <section class="section dashboard">
@@ -68,9 +80,12 @@ if (isset($_GET['id'])) {
                         <!-- No Labels Form -->
                         <form class="row g-3" method="POST" action="carro/alterar.php">
                           <div class="col-md-6">
-                            <img src="../imagens/carros/<?php echo $Imagem;?>" style="width:40%" alt="<?php echo $Modelo;?>">
+                            <img src="../imagens/carros/<?php echo $Imagem;?>" style="width:40%" alt="<?php echo $Modelo;?>" class="form-control">
+                            <input type="file" class="col-md-6" name="imagem">
                           </div>
-                          <input type="text" class="form-control" value="<?php echo $CarroID;?>" name="CarroID">
+                          <div class="col-md-6">
+                            <input type="text" class="form-control" value="<?php echo $CarroID;?>" name="CarroID">
+                          </div>
                           <div class="col-md-6">
                             <input type="text" name="modelo" class="form-control" value="<?php echo $Modelo;?>" placeholder="Modelo">
                           </div>
@@ -97,6 +112,26 @@ if (isset($_GET['id'])) {
                           </div>
                           <div class="col-6">
                             <input type="number" class="form-control" readonly name="valorDiario" value="<?php echo $ValorDiaria;?>" placeholder="Valor Diário">
+                          </div>
+                          <div class="col-6">
+                            <Select class="form-control" name="situacaoCarro">
+                              <option>Estado do Carro</option>
+                              <option value="Disponível"<?php 
+                                if ($SituacaoCarro=="Disponível") {
+                                  echo "selected";
+                                }
+                              ?>>Disponível</option>
+                              <option value="Indisponível"<?php 
+                                if ($SituacaoCarro=="Indisponível") {
+                                  echo "selected";
+                                }
+                              ?>>Indisponível</option>
+                              <option value="Manutenção"<?php 
+                                if ($SituacaoCarro=="Manutenção") {
+                                  echo "selected";
+                                }
+                              ?>>Manutenção</option>
+                            </Select>  
                           </div>
                           <div class="text-center">
                             <button type="submit" name="cancelar" class="btn btn-secondary" >Cancelar</button>
